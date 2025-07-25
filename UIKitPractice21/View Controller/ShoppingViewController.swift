@@ -6,6 +6,9 @@
 //
 
 import UIKit
+import Alamofire
+import Kingfisher
+import SnapKit
 
 class ShoppingViewController: BaseViewController {
     override func viewDidLoad() {
