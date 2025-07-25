@@ -30,7 +30,7 @@ final class ShopViewController: BaseViewController {
     }
 }
 
-extension ShopViewController {
+private extension ShopViewController {
     private func configure() {
         configureNavigation()
         configureSubview()
@@ -86,12 +86,12 @@ extension ShopViewController: UISearchBarDelegate {
         ])
         
         AF.request(url, method: .get, headers: headers)
-            .responseDecodable(of: ShopResponse.self) {
-                print($0)
+            .responseDecodable(of: ShopResponse.self) { response in
+                self.navigationController?.pushViewController(ShopSearchResultViewController(), animated: true)
             }
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override internal func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
         super.touchesBegan(touches, with: event)
     }
