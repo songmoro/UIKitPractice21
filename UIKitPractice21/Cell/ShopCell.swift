@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class ShopCell: BaseCollectionViewCell {
+final class ShopCell: BaseCollectionViewCell {
     let imageView = UIImageView()
     let heartButton = UIButton()
     let brandLabel = UILabel()
@@ -42,19 +42,21 @@ class ShopCell: BaseCollectionViewCell {
             $0.size.equalTo(imageView).multipliedBy(0.2)
         }
         
+        [brandLabel, titleLabel, priceLabel].snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(16)
+            $0.trailing.equalToSuperview().inset(12)
+        }
+        
         brandLabel.snp.makeConstraints {
             $0.top.equalTo(imageView.snp.bottom).offset(4)
-            $0.horizontalEdges.equalToSuperview().inset(12)
         }
         
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(brandLabel.snp.bottom).offset(4)
-            $0.horizontalEdges.equalToSuperview().inset(12)
         }
         
         priceLabel.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(4)
-            $0.horizontalEdges.equalToSuperview().inset(12)
         }
     }
     

@@ -8,7 +8,7 @@
 import UIKit
 
 class BaseCollectionViewCell: UICollectionViewCell, IsIdentifiable {
-    override init(frame: CGRect) {
+    override internal init(frame: CGRect) {
         super.init(frame: frame)
     }
     
