@@ -15,9 +15,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         
         let tabBarController = UITabBarController()
-        let vc = BaseViewController()
+        let shoppingViewController = UINavigationController(rootViewController: ShoppingViewController())
         
-        tabBarController.viewControllers = [vc]
+        tabBarController.setViewControllers([shoppingViewController], animated: true)
         
         window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()
