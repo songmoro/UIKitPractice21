@@ -15,7 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         
         let tabBarController = UITabBarController()
-        let vc = ViewController()
+        let vc = BaseViewController()
         
         tabBarController.viewControllers = [vc]
         
