@@ -26,6 +26,7 @@ final class ShopSearchResultViewController: BaseViewController {
         self.item = item
         print(item)
         configureNavigation(title)
+        configureResultLabel(item.total.description)
         collectionView.reloadData()
     }
 }
@@ -42,12 +43,15 @@ private extension ShopSearchResultViewController {
         navigationItem.title = title
     }
     
+    private func configureResultLabel(_ text: String) {
+        resultLabel.text = text
+    }
+    
     private func configureSubview() {
         view.addSubviews(resultLabel, simButton, dateButton, ascButton, dscButton, collectionView)
     }
     
     private func configureLayout() {
-        resultLabel.text = "000,000,000건"
         resultLabel.snp.makeConstraints {
             $0.top.equalToSuperview(\.safeAreaLayoutGuide)
             $0.horizontalEdges.equalToSuperview().inset(12)
@@ -103,7 +107,7 @@ extension ShopSearchResultViewController: UICollectionViewDelegate, UICollection
         let layout = UICollectionViewFlowLayout()
         let screen = UIScreen.main.bounds
         
-        layout.itemSize = CGSize(width: screen.width / 2, height: screen.width / 2 + screen.width / 4)
+        layout.itemSize = CGSize(width: screen.width / 2, height: screen.width / 2 + screen.width / 6)
         layout.minimumInteritemSpacing = .zero
         layout.sectionInset = .zero
         

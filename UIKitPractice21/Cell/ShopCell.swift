@@ -10,37 +10,65 @@ import SnapKit
 
 class ShopCell: BaseCollectionViewCell {
     let imageView = UIImageView()
+    let heartButton = UIButton()
     let brandLabel = UILabel()
     let titleLabel = UILabel()
     let priceLabel = UILabel()
     
-    override init(frame: CGRect) {
+    override private init(frame: CGRect) {
         super.init(frame: frame)
         
-        layer.borderColor = UIColor.gray.cgColor
-        layer.borderWidth = 2
-        
-        addSubviews(imageView, brandLabel, titleLabel, priceLabel)
-        
-        imageView.backgroundColor = .red
+        configure()
+    }
+    
+    private func configure() {
+        configureSubview()
+        configureLayout()
+        configureDesign()
+    }
+    
+    private func configureSubview() {
+        addSubviews(imageView, heartButton, brandLabel, titleLabel, priceLabel)
+    }
+    
+    private func configureLayout() {
         imageView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.size.equalToSuperview(\.snp.width)
+            $0.top.centerX.equalToSuperview()
+            $0.size.equalToSuperview(\.snp.width).inset(8)
+        }
+        
+        heartButton.snp.makeConstraints {
+            $0.bottom.trailing.equalTo(imageView).inset(8)
+            $0.size.equalTo(imageView).multipliedBy(0.2)
         }
         
         brandLabel.snp.makeConstraints {
-            $0.top.equalTo(imageView.snp.bottom)
-            $0.horizontalEdges.equalToSuperview()
+            $0.top.equalTo(imageView.snp.bottom).offset(4)
+            $0.horizontalEdges.equalToSuperview().inset(12)
         }
         
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(brandLabel.snp.bottom)
-            $0.horizontalEdges.equalToSuperview()
+            $0.top.equalTo(brandLabel.snp.bottom).offset(4)
+            $0.horizontalEdges.equalToSuperview().inset(12)
         }
         
         priceLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom)
-            $0.horizontalEdges.equalToSuperview()
+            $0.top.equalTo(titleLabel.snp.bottom).offset(4)
+            $0.horizontalEdges.equalToSuperview().inset(12)
         }
+    }
+    
+    private func configureDesign() {
+        imageView.layer.cornerRadius = 24
+        imageView.backgroundColor = .red
+        heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+        heartButton.imageView!.tintColor = .systemBackground
+        heartButton.backgroundColor = .label
+        heartButton.layer.cornerRadius = heartButton.bounds.width / 2
+        heartButton.layer.masksToBounds = true
+        brandLabel.font = .systemFont(ofSize: 13)
+        titleLabel.font = .systemFont(ofSize: 14)
+        priceLabel.font = .systemFont(ofSize: 17)
+        titleLabel.numberOfLines = 2
     }
 }
