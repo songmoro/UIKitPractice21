@@ -115,15 +115,12 @@ extension ShopSearchResultViewController: UICollectionViewDelegate, UICollection
     }
     
     internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(ShopCell.self, for: indexPath)
+        let cell: ShopCell = collectionView.dequeueReusableCell(for: indexPath)
+        let item = item.items[indexPath.item]
         
-        if let cell = cell as? ShopCell {
-            let item = item.items[indexPath.item]
-            
-            cell.brandLabel.text = item.brand
-            cell.titleLabel.text = item.title
-            cell.priceLabel.text = item.lprice
-        }
+        cell.brandLabel.text = item.brand
+        cell.titleLabel.text = item.title
+        cell.priceLabel.text = item.lprice
         
         return cell
     }

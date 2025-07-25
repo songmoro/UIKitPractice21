@@ -8,11 +8,13 @@
 import UIKit
 
 extension UICollectionView {
-    func register(_ cellClass: BaseCollectionViewCell.Type) {
+    typealias Cell = BaseCollectionViewCell
+    
+    func register<T: Cell>(_ cellClass: T.Type) {
         self.register(cellClass, forCellWithReuseIdentifier: cellClass.identifier)
     }
     
-    func dequeueReusableCell(_ cellClass: BaseCollectionViewCell.Type, for indexPath: IndexPath) -> BaseCollectionViewCell {
-        self.dequeueReusableCell(withReuseIdentifier: cellClass.identifier, for: indexPath) as! BaseCollectionViewCell
+    func dequeueReusableCell<T: Cell>(_ cellClass: T.Type = T.self, for indexPath: IndexPath) -> T {
+        self.dequeueReusableCell(withReuseIdentifier: cellClass.identifier, for: indexPath) as! T
     }
 }
