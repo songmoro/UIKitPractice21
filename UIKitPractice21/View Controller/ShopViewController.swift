@@ -87,7 +87,15 @@ extension ShopViewController: UISearchBarDelegate {
         
         AF.request(url, method: .get, headers: headers)
             .responseDecodable(of: ShopResponse.self) { response in
-                self.navigationController?.pushViewController(ShopSearchResultViewController(), animated: true)
+                switch response.result {
+                case .success(let item):
+                    let vc = ShopSearchResultViewController()
+                    vc.reload(from: text, to: item)
+                    
+                    self.navigationController?.pushViewController(vc, animated: true)
+                case .failure:
+                    break
+                }
             }
     }
     

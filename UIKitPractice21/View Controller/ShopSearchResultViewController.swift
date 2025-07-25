@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 
 final class ShopSearchResultViewController: BaseViewController {
+    private var item = ShopResponse(total: 0, items: [])
     private let resultLabel = UILabel()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     private let simButton = UIButton(configuration: .filled())
@@ -20,19 +21,25 @@ final class ShopSearchResultViewController: BaseViewController {
         super.viewDidLoad()
         configure()
     }
+    
+    public func reload(from title: String, to item: ShopResponse) {
+        self.item = item
+        print(item)
+        configureNavigation(title)
+        collectionView.reloadData()
+    }
 }
 
 private extension ShopSearchResultViewController {
     private func configure() {
-        configureNavigation()
         configureSubview()
         configureLayout()
         configureButton()
         configureCollectionView()
     }
     
-    private func configureNavigation() {
-        navigationItem.title = "캠핑카"
+    private func configureNavigation(_ title: String) {
+        navigationItem.title = title
     }
     
     private func configureSubview() {
@@ -91,14 +98,75 @@ extension ShopSearchResultViewController: UICollectionViewDelegate, UICollection
     private func configureCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
+        collectionView.register(ShopCell.self, forCellWithReuseIdentifier: "ShopCell")
+        
+        let layout = UICollectionViewFlowLayout()
+        let screen = UIScreen.main.bounds
+        
+        layout.itemSize = CGSize(width: screen.width / 2, height: screen.width / 2 + screen.width / 4)
+        layout.minimumInteritemSpacing = .zero
+        layout.sectionInset = .zero
+        
+        collectionView.collectionViewLayout = layout
     }
     
     internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        0
+        item.items.count
     }
     
     internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        UICollectionViewCell()
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ShopCell", for: indexPath)
+        
+        if let cell = cell as? ShopCell {
+            let item = item.items[indexPath.item]
+            
+            cell.brandLabel.text = item.brand
+            cell.titleLabel.text = item.title
+            cell.priceLabel.text = item.lprice
+        }
+        
+        return cell
+    }
+}
+
+class ShopCell: UICollectionViewCell {
+    let imageView = UIImageView()
+    let brandLabel = UILabel()
+    let titleLabel = UILabel()
+    let priceLabel = UILabel()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        layer.borderColor = UIColor.gray.cgColor
+        layer.borderWidth = 2
+        
+        addSubviews(imageView, brandLabel, titleLabel, priceLabel)
+        
+        imageView.backgroundColor = .red
+        imageView.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.size.equalToSuperview(\.snp.width)
+        }
+        
+        brandLabel.snp.makeConstraints {
+            $0.top.equalTo(imageView.snp.bottom)
+            $0.horizontalEdges.equalToSuperview()
+        }
+        
+        titleLabel.snp.makeConstraints {
+            $0.top.equalTo(brandLabel.snp.bottom)
+            $0.horizontalEdges.equalToSuperview()
+        }
+        
+        priceLabel.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom)
+            $0.horizontalEdges.equalToSuperview()
+        }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
