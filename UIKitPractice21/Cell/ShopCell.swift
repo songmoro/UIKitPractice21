@@ -9,16 +9,40 @@ import UIKit
 import SnapKit
 
 final class ShopCell: BaseCollectionViewCell {
-    let imageView = UIImageView()
-    let heartButton = UIButton()
-    let brandLabel = UILabel()
-    let titleLabel = UILabel()
-    let priceLabel = UILabel()
+    private var model: ShopItem? {
+        didSet {
+            guard let model else { return }
+            update(model)
+        }
+    }
+    
+    private let imageView = UIImageView()
+    private let heartButton = UIButton()
+    private let brandLabel = UILabel()
+    private let titleLabel = UILabel()
+    private let priceLabel = UILabel()
     
     override private init(frame: CGRect) {
         super.init(frame: frame)
-        
         configure()
+    }
+    
+    public func reload(_ item: ShopItem) {
+        model = item
+    }
+    
+    internal override func prepareForReuse() {
+        super.prepareForReuse()
+        model = nil
+    }
+    
+    private func update(_ model: ShopItem) {
+        brandLabel.text = model.brand.isEmpty ? "브랜드 없음" : model.brand
+        titleLabel.text = model.title
+        
+        let price = Int(model.lprice) ?? 0
+        let attributedText = NSAttributedString(string: price.formatted(), attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .bold)])
+        priceLabel.attributedText = attributedText
     }
     
     private func configure() {
@@ -63,14 +87,24 @@ final class ShopCell: BaseCollectionViewCell {
     private func configureDesign() {
         imageView.layer.cornerRadius = 24
         imageView.backgroundColor = .red
+        
         heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
         heartButton.imageView!.tintColor = .systemBackground
         heartButton.backgroundColor = .label
         heartButton.layer.cornerRadius = heartButton.bounds.width / 2
         heartButton.layer.masksToBounds = true
-        brandLabel.font = .systemFont(ofSize: 13)
-        titleLabel.font = .systemFont(ofSize: 14)
-        priceLabel.font = .systemFont(ofSize: 17)
+        
+        brandLabel.font = .systemFont(ofSize: 12)
+        brandLabel.textColor = .systemGray
+        titleLabel.font = .systemFont(ofSize: 13)
         titleLabel.numberOfLines = 2
     }
+}
+
+#Preview {
+    let item = ShopItem(title: "스타리아 2층캠핑카", image: "", brand: "월드캠핑카", lprice: "", hprice: "19000000")
+    let cell = ShopCell()
+    cell.reload(item)
+    
+    return cell
 }
