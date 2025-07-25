@@ -9,6 +9,12 @@ import UIKit
 import Alamofire
 import SnapKit
 
+fileprivate enum ShopViewControllerErrorReason: Error {
+    case textIsNil
+    case textIsLowerThanTwo
+    case urlIsInvalid
+}
+
 final class ShopViewController: BaseViewController {
     private let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
@@ -58,7 +64,6 @@ extension ShopViewController: UISearchBarDelegate {
     }
     
     private func search(_ text: String?) {
-        print(#function)
         do {
             guard let text else { throw ShopViewControllerErrorReason.textIsNil }
             guard text.count >= 2 else { throw ShopViewControllerErrorReason.textIsLowerThanTwo }
@@ -90,23 +95,4 @@ extension ShopViewController: UISearchBarDelegate {
         view.endEditing(true)
         super.touchesBegan(touches, with: event)
     }
-}
-
-struct ShopResponse: Decodable {
-    let total: Int
-    let items: [ShopItem]
-}
-
-struct ShopItem: Decodable {
-    let title: String
-    let image: String
-    let brand: String
-    let lprice: String
-    let hprice: String
-}
-
-fileprivate enum ShopViewControllerErrorReason: Error {
-    case textIsNil
-    case textIsLowerThanTwo
-    case urlIsInvalid
 }
