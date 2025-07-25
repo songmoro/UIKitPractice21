@@ -98,7 +98,7 @@ extension ShopSearchResultViewController: UICollectionViewDelegate, UICollection
     private func configureCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.register(ShopCell.self, forCellWithReuseIdentifier: "ShopCell")
+        collectionView.register(ShopCell.self)
         
         let layout = UICollectionViewFlowLayout()
         let screen = UIScreen.main.bounds
@@ -115,7 +115,7 @@ extension ShopSearchResultViewController: UICollectionViewDelegate, UICollection
     }
     
     internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ShopCell", for: indexPath)
+        let cell = collectionView.dequeueReusableCell(ShopCell.self, for: indexPath)
         
         if let cell = cell as? ShopCell {
             let item = item.items[indexPath.item]
