@@ -76,7 +76,9 @@ extension ShopCell {
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 24
         
-        heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+        heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
+        heartButton.setImage(UIImage(systemName: "heart.fill"), for: .selected)
+        heartButton.addTarget(self, action: #selector(heartButtonClicked), for: .touchUpInside)
         heartButton.imageView!.tintColor = .systemBackground
         heartButton.backgroundColor = .label
         heartButton.layer.cornerRadius = heartButton.bounds.width / 2
@@ -86,6 +88,10 @@ extension ShopCell {
         brandLabel.textColor = .systemGray
         titleLabel.font = .systemFont(ofSize: 13)
         titleLabel.numberOfLines = 2
+    }
+    
+    @objc private func heartButtonClicked(_ sender: UIButton) {
+        heartButton.isSelected.toggle()
     }
 }
 
