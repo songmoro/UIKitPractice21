@@ -72,6 +72,7 @@ extension ShopCell {
     
     private func configureDesign() {
         imageView.layer.cornerRadius = 24
+        imageView.backgroundColor = .systemGray
         
         heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
         heartButton.imageView!.tintColor = .systemBackground
