@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 import SnapKit
 
 final class ShopCell: BaseCollectionViewCell {
@@ -26,25 +27,10 @@ final class ShopCell: BaseCollectionViewCell {
         super.init(frame: frame)
         configure()
     }
-    
-    public func reload(_ item: ShopItem) {
-        model = item
-    }
-    
-    internal override func prepareForReuse() {
-        super.prepareForReuse()
-        model = nil
-    }
-    
-    private func update(_ model: ShopItem) {
-        brandLabel.text = model.brand.isEmpty ? "브랜드 없음" : model.brand
-        titleLabel.text = model.title
-        
-        let price = Int(model.lprice) ?? 0
-        let attributedText = NSAttributedString(string: price.formatted(), attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .bold)])
-        priceLabel.attributedText = attributedText
-    }
-    
+}
+
+// MARK: Configure
+extension ShopCell {
     private func configure() {
         configureSubview()
         configureLayout()
@@ -86,7 +72,6 @@ final class ShopCell: BaseCollectionViewCell {
     
     private func configureDesign() {
         imageView.layer.cornerRadius = 24
-        imageView.backgroundColor = .red
         
         heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
         heartButton.imageView!.tintColor = .systemBackground
@@ -101,8 +86,33 @@ final class ShopCell: BaseCollectionViewCell {
     }
 }
 
+// MARK: Update
+extension ShopCell {
+    public func reload(_ item: ShopItem) {
+        model = item
+    }
+    
+    internal override func prepareForReuse() {
+        super.prepareForReuse()
+        model = nil
+    }
+    
+    private func update(_ model: ShopItem) {
+        let url = URL(string: model.image)!
+        imageView.kf.setImage(with: url)
+        imageView.kf.indicatorType = .activity
+        
+        brandLabel.text = model.brand.isEmpty ? "브랜드 없음" : model.brand
+        titleLabel.text = model.title
+        
+        let price = Int(model.lprice) ?? 0
+        let attributedText = NSAttributedString(string: price.formatted(), attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .bold)])
+        priceLabel.attributedText = attributedText
+    }
+}
+
 #Preview {
-    let item = ShopItem(title: "스타리아 2층캠핑카", image: "", brand: "월드캠핑카", lprice: "", hprice: "19000000")
+    let item = ShopItem(title: "스타리아 2층캠핑카", image: "https://shopping-phinf.pstatic.net/main_8505202/85052026934.2.jpg", brand: "월드캠핑카", lprice: "", hprice: "19000000")
     let cell = ShopCell()
     cell.reload(item)
     
