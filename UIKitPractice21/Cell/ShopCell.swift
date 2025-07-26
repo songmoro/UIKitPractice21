@@ -71,8 +71,10 @@ extension ShopCell {
     }
     
     private func configureDesign() {
-        imageView.layer.cornerRadius = 24
+        imageView.kf.indicatorType = .activity
         imageView.backgroundColor = .systemGray
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 24
         
         heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
         heartButton.imageView!.tintColor = .systemBackground
@@ -100,8 +102,8 @@ extension ShopCell {
     
     private func update(_ model: ShopItem) {
         let url = URL(string: model.image)!
-        imageView.kf.setImage(with: url)
-        imageView.kf.indicatorType = .activity
+        let processor = DownsamplingImageProcessor(size: CGSize(width: imageView.bounds.width, height: imageView.bounds.height))
+        imageView.kf.setImage(with: url, options: [.processor(processor)])
         
         brandLabel.text = model.brand.isEmpty ? "브랜드 없음" : model.brand
         titleLabel.text = model.title
@@ -112,6 +114,7 @@ extension ShopCell {
     }
 }
 
+#if DEBUG
 #Preview {
     let item = ShopItem(title: "스타리아 2층캠핑카", image: "https://shopping-phinf.pstatic.net/main_8505202/85052026934.2.jpg", brand: "월드캠핑카", lprice: "", hprice: "19000000")
     let cell = ShopCell()
@@ -119,3 +122,4 @@ extension ShopCell {
     
     return cell
 }
+#endif

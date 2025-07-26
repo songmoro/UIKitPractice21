@@ -133,6 +133,8 @@ extension ShopSearchResultViewController: UICollectionViewDelegate, UICollection
     }
 }
 
+#if DEBUG
 #Preview {
     ShopSearchResultViewController()
 }
+#endif
