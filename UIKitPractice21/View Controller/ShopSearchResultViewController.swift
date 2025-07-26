@@ -14,11 +14,7 @@ fileprivate enum SortBy {
 
 final class ShopSearchResultViewController: BaseViewController {
     private var item = ShopResponse(total: 0, items: [])
-    private var sortBy = (SortBy.none, UIButton()) {
-        didSet {
-            
-        }
-    }
+    private var sortBy = (SortBy.none, UIButton())
     private let resultLabel = UILabel()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     private let simButton = UIButton(configuration: .filled())
@@ -82,33 +78,17 @@ private extension ShopSearchResultViewController {
     
     private func configureButton() {
         simButton.setTitle("정확도", for: .normal)
-        simButton.setTitle("정확도", for: .selected)
-        simButton.setTitleColor(.label, for: .normal)
-        simButton.setTitleColor(.systemBackground, for: .selected)
-        simButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        simButton.addTarget(self, action: #selector(sortByButtonClicked), for: .touchUpInside)
-        
         dateButton.setTitle("날짜순", for: .normal)
-        dateButton.setTitle("날짜순", for: .selected)
-        dateButton.setTitleColor(.label, for: .normal)
-        dateButton.setTitleColor(.systemBackground, for: .selected)
-        dateButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        dateButton.addTarget(self, action: #selector(sortByButtonClicked), for: .touchUpInside)
-        
         ascButton.setTitle("가격높은순", for: .normal)
-        ascButton.setTitle("가격높은순", for: .selected)
-        ascButton.setTitleColor(.label, for: .normal)
-        ascButton.setTitleColor(.systemBackground, for: .selected)
-        ascButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        ascButton.addTarget(self, action: #selector(sortByButtonClicked), for: .touchUpInside)
-        
         dscButton.setTitle("가격낮은순", for: .normal)
-        dscButton.setTitle("가격낮은순", for: .selected)
-        dscButton.setTitleColor(.label, for: .normal)
-        dscButton.setTitleColor(.systemBackground, for: .selected)
-//        dscButton.backgroundColor = .cl
-        dscButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        dscButton.addTarget(self, action: #selector(sortByButtonClicked), for: .touchUpInside)
+        
+        [simButton, dateButton, ascButton, dscButton].forEach {
+            $0.setTitle($0.currentTitle, for: .selected)
+            $0.setTitleColor(.label, for: .normal)
+            $0.setTitleColor(.systemBackground, for: .selected)
+            $0.setContentHuggingPriority(.defaultLow, for: .horizontal)
+            $0.addTarget(self, action: #selector(sortByButtonClicked), for: .touchUpInside)
+        }
         
         sortByButtonClicked(simButton)
     }
