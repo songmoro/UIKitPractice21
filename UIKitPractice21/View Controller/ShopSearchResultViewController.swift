@@ -21,30 +21,15 @@ final class ShopSearchResultViewController: BaseViewController {
         super.viewDidLoad()
         configure()
     }
-    
-    public func reload(from title: String, to item: ShopResponse) {
-        self.item = item
-        print(item)
-        configureNavigation(title)
-        configureResultLabel(item.total.description)
-        collectionView.reloadData()
-    }
 }
 
+// MARK: Configure
 private extension ShopSearchResultViewController {
     private func configure() {
         configureSubview()
         configureLayout()
         configureButton()
         configureCollectionView()
-    }
-    
-    private func configureNavigation(_ title: String) {
-        navigationItem.title = title
-    }
-    
-    private func configureResultLabel(_ text: String) {
-        resultLabel.text = text
     }
     
     private func configureSubview() {
@@ -98,6 +83,27 @@ private extension ShopSearchResultViewController {
     }
 }
 
+// MARK: Update
+extension ShopSearchResultViewController {
+    public func reload(from title: String, to item: ShopResponse) {
+        self.item = item
+        print(item)
+        updateNavigation(title)
+        updateResultLabel(item.total)
+        collectionView.reloadData()
+    }
+    
+    private func updateNavigation(_ title: String) {
+        navigationItem.title = title
+    }
+    
+    private func updateResultLabel(_ result: Int) {
+        let attributedText = NSAttributedString(string: "\(result.formatted()) 개의 검색 결과", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: UIColor.systemGreen])
+        resultLabel.attributedText = attributedText
+    }
+}
+
+// MARK: CollectionView
 extension ShopSearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     private func configureCollectionView() {
         collectionView.delegate = self
