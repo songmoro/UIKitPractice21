@@ -8,8 +8,17 @@
 import UIKit
 import SnapKit
 
+fileprivate enum SortBy {
+    case none, sim, date, asc, dsc
+}
+
 final class ShopSearchResultViewController: BaseViewController {
     private var item = ShopResponse(total: 0, items: [])
+    private var sortBy = (SortBy.none, UIButton()) {
+        didSet {
+            
+        }
+    }
     private let resultLabel = UILabel()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     private let simButton = UIButton(configuration: .filled())
@@ -73,13 +82,35 @@ private extension ShopSearchResultViewController {
     
     private func configureButton() {
         simButton.setTitle("정확도", for: .normal)
+        simButton.setTitle("정확도", for: .selected)
+        simButton.setTitleColor(.label, for: .normal)
+        simButton.setTitleColor(.systemBackground, for: .selected)
         simButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        simButton.addTarget(self, action: #selector(sortByButtonClicked), for: .touchUpInside)
+        
         dateButton.setTitle("날짜순", for: .normal)
+        dateButton.setTitle("날짜순", for: .selected)
+        dateButton.setTitleColor(.label, for: .normal)
+        dateButton.setTitleColor(.systemBackground, for: .selected)
         dateButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        dateButton.addTarget(self, action: #selector(sortByButtonClicked), for: .touchUpInside)
+        
         ascButton.setTitle("가격높은순", for: .normal)
+        ascButton.setTitle("가격높은순", for: .selected)
+        ascButton.setTitleColor(.label, for: .normal)
+        ascButton.setTitleColor(.systemBackground, for: .selected)
         ascButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        ascButton.addTarget(self, action: #selector(sortByButtonClicked), for: .touchUpInside)
+        
         dscButton.setTitle("가격낮은순", for: .normal)
+        dscButton.setTitle("가격낮은순", for: .selected)
+        dscButton.setTitleColor(.label, for: .normal)
+        dscButton.setTitleColor(.systemBackground, for: .selected)
+//        dscButton.backgroundColor = .cl
         dscButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        dscButton.addTarget(self, action: #selector(sortByButtonClicked), for: .touchUpInside)
+        
+        sortByButtonClicked(simButton)
     }
 }
 
@@ -100,6 +131,32 @@ extension ShopSearchResultViewController {
     private func updateResultLabel(_ result: Int) {
         let attributedText = NSAttributedString(string: "\(result.formatted()) 개의 검색 결과", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: UIColor.systemGreen])
         resultLabel.attributedText = attributedText
+    }
+    
+    @objc private func sortByButtonClicked(_ sender: UIButton) {
+        updateSortBy(sender)
+    }
+    
+    private func updateSortBy(_ button: UIButton) {
+        // TODO: 버튼 커스텀
+        [simButton, dateButton, ascButton, dscButton].forEach {
+            $0.isSelected = false
+        }
+        
+        button.isSelected = true
+        sortBy.1 = button
+        
+        switch button {
+        case simButton:
+            sortBy.0 = .sim
+        case dateButton:
+            sortBy.0 = .date
+        case ascButton:
+            sortBy.0 = .asc
+        case dscButton:
+            sortBy.0 = .dsc
+        default: break
+        }
     }
 }
 
