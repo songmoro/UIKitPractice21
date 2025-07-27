@@ -12,6 +12,10 @@ class BaseButton: UIButton {
         super.init(frame: frame)
     }
     
+    convenience init() {
+        self.init(frame: .zero)
+    }
+    
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
