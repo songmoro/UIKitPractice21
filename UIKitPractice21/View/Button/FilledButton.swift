@@ -7,11 +7,7 @@
 
 import UIKit
 
-enum SortBy {
-    case none, sim, date, asc, dsc
-}
-
-final class FilledButton: BaseButton {
+class FilledButton: BaseButton {
     var title: String = ""
     
      init(_ title: String) {
@@ -28,7 +24,7 @@ final class FilledButton: BaseButton {
     
     private func configureConfiguration() {
         configurationUpdateHandler = {
-            $0.configuration = ($0.isSelected) ? .selectedSortBy(self.title) : .defaultSortBy(self.title)
+            $0.configuration = ($0.isSelected) ? .selectedFilled(self.title) : .defaultFilled(self.title)
         }
     }
     

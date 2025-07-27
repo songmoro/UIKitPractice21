@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIButton.Configuration {
-    static func selectedSortBy(_ title: String?) -> Self {
+    static func selectedFilled(_ title: String?) -> Self {
         var configuration = UIButton.Configuration.filled()
         configuration.title = title
         configuration.baseBackgroundColor = .label
@@ -17,7 +17,7 @@ extension UIButton.Configuration {
         return configuration
     }
     
-    static func defaultSortBy(_ title: String?) -> Self {
+    static func defaultFilled(_ title: String?) -> Self {
         var configuration = UIButton.Configuration.filled()
         configuration.title = title
         configuration.baseBackgroundColor = .clear

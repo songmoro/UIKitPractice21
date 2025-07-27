@@ -20,6 +20,7 @@ protocol IsAPI {
 enum E: Error {
     case a
 }
+
 extension IsAPI {
     func call(response: @escaping (Result<Data?, Error>) -> (Void)) {
         guard let url else {
@@ -28,7 +29,6 @@ extension IsAPI {
         }
         
         var request: URLRequest = URLRequest(url: url)
-        
         request.httpMethod = method.rawValue
         
         if let headers {

@@ -10,14 +10,17 @@ import SnapKit
 
 final class ShopSearchViewController: BaseViewController {
     private var searchText = ""
-    private var item = ShopResponse(total: 0, items: [])
-    private var sortBy = (SortBy.none, UIButton())
+    
     private let resultLabel = UILabel()
+    
+    private var selected = SortByButton(sortBy: .none, title: "")
+    private let simButton = SortByButton(sortBy: .sim, title: "정확도")
+    private let dateButton = SortByButton(sortBy: .date, title: "날짜순")
+    private let ascButton = SortByButton(sortBy: .asc, title: "가격높은순")
+    private let dscButton = SortByButton(sortBy: .dsc, title: "가격낮은순")
+    
+    private var item = ShopResponse(total: 0, items: [])
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
-    private let simButton = FilledButton("정확도")
-    private let dateButton = FilledButton("날짜순")
-    private let ascButton = FilledButton("가격높은순")
-    private let dscButton = FilledButton("가격낮은순")
     
     override internal func viewDidLoad() {
         super.viewDidLoad()
@@ -63,7 +66,7 @@ private extension ShopSearchViewController {
         dscButton.snp.makeConstraints {
             $0.top.equalTo(resultLabel.snp.bottom).offset(8)
             $0.leading.equalTo(ascButton.snp.trailing).offset(8)
-            $0.trailing.greaterThanOrEqualToSuperview().inset(12).priority(1)
+            $0.trailing.greaterThanOrEqualToSuperview().inset(12).priority(.low)
         }
         
         collectionView.snp.makeConstraints {
@@ -98,31 +101,19 @@ extension ShopSearchViewController {
         resultLabel.attributedText = attributedText
     }
     
-    @objc private func sortByButtonClicked(_ sender: UIButton) {
+    @objc private func sortByButtonClicked(_ sender: SortByButton) {
         updateSortBy(sender)
         call()
     }
     
-    private func updateSortBy(_ button: UIButton) {
-        sortBy.1.isSelected = false
-        sortBy.1 = button
-        sortBy.1.isSelected = true
-        
-        switch button {
-        case simButton:
-            sortBy.0 = .sim
-        case dateButton:
-            sortBy.0 = .date
-        case ascButton:
-            sortBy.0 = .asc
-        case dscButton:
-            sortBy.0 = .dsc
-        default: break
-        }
+    private func updateSortBy(_ button: SortByButton) {
+        selected.isSelected = false
+        selected = button
+        selected.isSelected = true
     }
     
     private func call() {
-        let request = ShopRequest(query: searchText, display: 100, sort: String(describing: sortBy.0))
+        let request = ShopRequest(query: searchText, display: 100, sort: String(describing: selected.sortBy))
         ShopAPI(request: request).call {
             switch $0 {
             case .success(let data):
