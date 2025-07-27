@@ -12,7 +12,6 @@ import SnapKit
 fileprivate enum ShopViewControllerErrorReason: Error {
     case textIsNil
     case textIsLowerThanTwo
-    case urlIsInvalid
 }
 
 final class ShopViewController: BaseViewController {
@@ -68,35 +67,14 @@ extension ShopViewController: UISearchBarDelegate {
             guard let text else { throw ShopViewControllerErrorReason.textIsNil }
             guard text.count >= 2 else { throw ShopViewControllerErrorReason.textIsLowerThanTwo }
             
-            try call(text)
+            let vc = ShopSearchViewController()
+            vc.input(text: text)
             
+            self.navigationController?.pushViewController(vc, animated: true)
         }
         catch(let error) {
             print(error)
         }
-    }
-    
-    private func call(_ text: String) throws {
-        let url = URL(string: "https://openapi.naver.com/v1/search/shop.json?query=\(text)")
-        guard let url else { throw ShopViewControllerErrorReason.urlIsInvalid }
-        
-        let headers = HTTPHeaders([
-            "X-Naver-Client-Id": APIKey.naverClientId,
-            "X-Naver-Client-Secret": APIKey.naverClientSecret
-        ])
-        
-        AF.request(url, method: .get, headers: headers)
-            .responseDecodable(of: ShopResponse.self) { response in
-                switch response.result {
-                case .success(let item):
-                    let vc = ShopSearchResultViewController()
-                    vc.reload(from: text, to: item)
-                    
-                    self.navigationController?.pushViewController(vc, animated: true)
-                case .failure:
-                    break
-                }
-            }
     }
     
     override internal func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

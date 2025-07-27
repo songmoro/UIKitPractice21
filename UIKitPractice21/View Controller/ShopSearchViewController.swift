@@ -1,5 +1,5 @@
 //
-//  ShopSearchResultViewController.swift
+//  ShopSearchViewController.swift
 //  UIKitPractice21
 //
 //  Created by 송재훈 on 7/25/25.
@@ -8,7 +8,8 @@
 import UIKit
 import SnapKit
 
-final class ShopSearchResultViewController: BaseViewController {
+final class ShopSearchViewController: BaseViewController {
+    private var searchText = ""
     private var item = ShopResponse(total: 0, items: [])
     private var sortBy = (SortBy.none, UIButton())
     private let resultLabel = UILabel()
@@ -25,7 +26,7 @@ final class ShopSearchResultViewController: BaseViewController {
 }
 
 // MARK: Configure
-private extension ShopSearchResultViewController {
+private extension ShopSearchViewController {
     private func configure() {
         configureSubview()
         configureLayout()
@@ -82,13 +83,10 @@ private extension ShopSearchResultViewController {
 }
 
 // MARK: Update
-extension ShopSearchResultViewController {
-    public func reload(from title: String, to item: ShopResponse) {
-        self.item = item
-        print(item)
-        updateNavigation(title)
-        updateResultLabel(item.total)
-        collectionView.reloadData()
+extension ShopSearchViewController {
+    public func input(text: String) {
+        self.searchText = text
+        updateNavigation(text)
     }
     
     private func updateNavigation(_ title: String) {
@@ -102,16 +100,13 @@ extension ShopSearchResultViewController {
     
     @objc private func sortByButtonClicked(_ sender: UIButton) {
         updateSortBy(sender)
+        call()
     }
     
     private func updateSortBy(_ button: UIButton) {
-        // TODO: 버튼 커스텀
-        [simButton, dateButton, ascButton, dscButton].forEach {
-            $0.isSelected = false
-        }
-        
-        button.isSelected = true
+        sortBy.1.isSelected = false
         sortBy.1 = button
+        sortBy.1.isSelected = true
         
         switch button {
         case simButton:
@@ -125,10 +120,23 @@ extension ShopSearchResultViewController {
         default: break
         }
     }
+    
+    private func call() {
+        let request = ShopRequest(query: searchText, display: 100, sort: String(describing: sortBy.0))
+        ShopAPI(request: request).call {
+            switch $0 {
+            case .success(let data):
+                let response = try! JSONDecoder().decode(ShopResponse.self, from: data!)
+                self.updateCollectionView(item: response)
+            case .failure(let error):
+                break
+            }
+        }
+    }
 }
 
 // MARK: CollectionView
-extension ShopSearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension ShopSearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     private func configureCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -155,10 +163,15 @@ extension ShopSearchResultViewController: UICollectionViewDelegate, UICollection
         
         return cell
     }
+    
+    private func updateCollectionView(item: ShopResponse) {
+        self.item = item
+        collectionView.reloadData()
+    }
 }
 
 #if DEBUG
 #Preview {
-    ShopSearchResultViewController()
+    ShopSearchViewController()
 }
 #endif
