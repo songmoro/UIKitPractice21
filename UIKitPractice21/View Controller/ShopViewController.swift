@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Then
 
 fileprivate enum ShopViewControllerErrorReason: LocalizedError {
     case textIsNil
@@ -23,13 +24,10 @@ fileprivate enum ShopViewControllerErrorReason: LocalizedError {
 }
 
 final class ShopViewController: BaseViewController {
-    private let searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
-        searchBar.placeholder = "브랜드, 상품, 프로필, 태그 등"
-        searchBar.searchBarStyle = .minimal
-        
-        return searchBar
-    }()
+    private let searchBar = UISearchBar().then {
+        $0.placeholder = "브랜드, 상품, 프로필, 태그 등"
+        $0.searchBarStyle = .minimal
+    }
     
     override internal func viewDidLoad() {
         super.viewDidLoad()
@@ -72,11 +70,11 @@ extension ShopViewController: UISearchBarDelegate {
     
     private func search(_ text: String?) {
         do {
-            guard let text else { throw ShopViewControllerErrorReason.textIsNil }
-            guard text.count >= 2 else { throw ShopViewControllerErrorReason.textIsLowerThanTwo }
-            
             try ShopSearchViewController()
                 .then {
+                    guard let text else { throw ShopViewControllerErrorReason.textIsNil }
+                    guard text.count >= 2 else { throw ShopViewControllerErrorReason.textIsLowerThanTwo }
+                    
                     $0.input(text: text)
                 }
                 .do {

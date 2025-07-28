@@ -18,10 +18,25 @@ final class ShopCell: BaseCollectionViewCell {
         }
     }
     
-    private let imageView = UIImageView()
-    private let heartButton = UIButton()
-    private let brandLabel = UILabel()
-    private let titleLabel = UILabel()
+    private let imageView = UIImageView().then {
+        $0.kf.indicatorType = .activity
+        $0.backgroundColor = .systemGray
+        $0.clipsToBounds = true
+        $0.layer.cornerRadius = 24
+    }
+    private let heartButton = UIButton().then {
+        $0.setImage(UIImage(systemName: "heart"), for: .normal)
+        $0.setImage(UIImage(systemName: "heart.fill"), for: .selected)
+        $0.backgroundColor = .label
+    }
+    private let brandLabel = UILabel().then {
+        $0.font = .systemFont(ofSize: 12)
+        $0.textColor = .systemGray
+    }
+    private let titleLabel = UILabel().then {
+        $0.font = .systemFont(ofSize: 13)
+        $0.numberOfLines = 2
+    }
     private let priceLabel = UILabel()
     
     override private init(frame: CGRect) {
@@ -35,7 +50,7 @@ extension ShopCell {
     private func configure() {
         configureSubview()
         configureLayout()
-        configureDesign()
+        configureHeartButton()
     }
     
     private func configureSubview() {
@@ -72,32 +87,12 @@ extension ShopCell {
         }
     }
     
-    private func configureDesign() {
-        imageView.do {
-            $0.kf.indicatorType = .activity
-            $0.backgroundColor = .systemGray
-            $0.clipsToBounds = true
-            $0.layer.cornerRadius = 24
-        }
-        
+    private func configureHeartButton() {
         heartButton.do {
-            $0.setImage(UIImage(systemName: "heart"), for: .normal)
-            $0.setImage(UIImage(systemName: "heart.fill"), for: .selected)
-            $0.addTarget(self, action: #selector(heartButtonClicked), for: .touchUpInside)
             $0.imageView!.tintColor = .systemBackground
-            $0.backgroundColor = .label
             $0.layer.cornerRadius = $0.bounds.width / 2
             $0.layer.masksToBounds = true
-        }
-        
-        brandLabel.do {
-            $0.font = .systemFont(ofSize: 12)
-            $0.textColor = .systemGray
-        }
-        
-        titleLabel.do {
-            $0.font = .systemFont(ofSize: 13)
-            $0.numberOfLines = 2
+            $0.addTarget(self, action: #selector(heartButtonClicked), for: .touchUpInside)
         }
     }
     
@@ -127,9 +122,8 @@ extension ShopCell {
         brandLabel.text = model.brand.isEmpty ? "브랜드 없음" : model.brand
         titleLabel.text = model.title
         
-        let price = Int(model.lprice) ?? 0
-        
         priceLabel.do {
+            let price = Int(model.lprice) ?? 0
             let attributedText = NSAttributedString(string: price.formatted(), attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .bold)])
             $0.attributedText = attributedText
         }
