@@ -198,6 +198,7 @@ extension ShopSearchViewController: UICollectionViewDelegate, UICollectionViewDa
         }
     }
     
+    // MARK: Functions
     private func updateCollectionView(items: [ShopItem]) {
         self.searchItem.items.append(contentsOf: items)
         collectionView.reloadData()
