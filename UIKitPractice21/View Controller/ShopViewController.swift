@@ -75,16 +75,23 @@ extension ShopViewController: UISearchBarDelegate {
             guard let text else { throw ShopViewControllerErrorReason.textIsNil }
             guard text.count >= 2 else { throw ShopViewControllerErrorReason.textIsLowerThanTwo }
             
-            let vc = ShopSearchViewController()
-            vc.input(text: text)
-            
-            guard let navigationController else { throw ShopViewControllerErrorReason.navigationControllerIsNil }
-            navigationController.pushViewController(vc, animated: true)
+            try ShopSearchViewController()
+                .then {
+                    $0.input(text: text)
+                }
+                .do {
+                    guard let navigationController else { throw ShopViewControllerErrorReason.navigationControllerIsNil }
+                    navigationController.pushViewController($0, animated: true)
+                }
         }
         catch(let error) {
-            let alert = UIAlertController(title: nil, message: error.localizedDescription, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true)
+            UIAlertController(title: nil, message: error.localizedDescription, preferredStyle: .alert)
+                .then {
+                    $0.addAction(UIAlertAction(title: "확인", style: .default))
+                }
+                .do {
+                    present($0, animated: true)
+                }
         }
     }
     

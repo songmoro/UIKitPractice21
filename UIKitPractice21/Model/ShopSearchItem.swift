@@ -17,4 +17,8 @@ struct ShopSearchItem {
         self.display = display
         self.items = items
     }
+    
+    func hasNextPage(_ item: Int) -> Bool {
+        item == (items.count - 2) && total > (items.count + display)
+    }
 }

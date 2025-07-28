@@ -118,16 +118,21 @@ extension ShopCell {
     }
     
     private func update(_ model: ShopItem) {
-        let url = URL(string: model.image)!
-        let processor = DownsamplingImageProcessor(size: CGSize(width: imageView.bounds.width, height: imageView.bounds.height))
-        imageView.kf.setImage(with: url, options: [.processor(processor)])
+        imageView.do {
+            let url = URL(string: model.image)!
+            let processor = DownsamplingImageProcessor(size: CGSize(width: $0.bounds.width, height: $0.bounds.height))
+            $0.kf.setImage(with: url, options: [.processor(processor)])
+        }
         
         brandLabel.text = model.brand.isEmpty ? "브랜드 없음" : model.brand
         titleLabel.text = model.title
         
         let price = Int(model.lprice) ?? 0
-        let attributedText = NSAttributedString(string: price.formatted(), attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .bold)])
-        priceLabel.attributedText = attributedText
+        
+        priceLabel.do {
+            let attributedText = NSAttributedString(string: price.formatted(), attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .bold)])
+            $0.attributedText = attributedText
+        }
     }
 }
 

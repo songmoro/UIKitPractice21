@@ -10,7 +10,7 @@ import UIKit
 class FilledButton: BaseButton {
     var title: String = ""
     
-     init(_ title: String) {
+    init(_ title: String) {
         super.init(frame: .zero)
         self.title = title
         

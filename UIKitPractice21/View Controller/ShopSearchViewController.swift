@@ -9,9 +9,8 @@ import UIKit
 import SnapKit
 import Then
 
-enum ShopSearchViewControllerErrorReason: LocalizedError {
+fileprivate enum ShopSearchViewControllerErrorReason: LocalizedError {
     case selectButtonIsNil
-    case apiError(error: ShopAPIErrorReason)
 }
 
 final class ShopSearchViewController: BaseViewController {
@@ -19,16 +18,8 @@ final class ShopSearchViewController: BaseViewController {
     
     private let resultLabel = UILabel()
     
-    private var selected: SortByButton? {
-        willSet {
-            newValue?.isSelected = true
-            newValue?.isUserInteractionEnabled = false
-        }
-        didSet {
-            oldValue?.isSelected = false
-            oldValue?.isUserInteractionEnabled = true
-        }
-    }
+    private var selected: SortByButton?
+    // TODO: 커스텀 뷰
     private let simButton = SortByButton(sortBy: .sim, title: "정확도")
     private let dateButton = SortByButton(sortBy: .date, title: "날짜순")
     private let ascButton = SortByButton(sortBy: .asc, title: "가격높은순")
@@ -112,14 +103,24 @@ extension ShopSearchViewController {
     }
     
     private func updateResultLabel(_ result: Int) {
-        let attributedText = NSAttributedString(string: "\(result.formatted()) 개의 검색 결과", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: UIColor.systemGreen])
-        resultLabel.attributedText = attributedText
+        resultLabel.do {
+            let attributedText = NSAttributedString(string: "\(result.formatted()) 개의 검색 결과", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: UIColor.systemGreen])
+            $0.attributedText = attributedText
+        }
     }
     
     @objc private func sortByButtonClicked(_ sender: SortByButton) {
-        selected = sender
+        updateSelectedButton(sender)
         reset()
         call(sender)
+    }
+    
+    private func updateSelectedButton(_ willSelected: SortByButton) {
+        selected?.isSelected = false
+        selected?.isUserInteractionEnabled = true
+        selected = willSelected
+        willSelected.isSelected = true
+        willSelected.isUserInteractionEnabled = false
     }
     
     private func call(_ button: SortByButton?) {
@@ -139,7 +140,6 @@ extension ShopSearchViewController {
         catch(let error) {
             handleError(error)
         }
-        
     }
     
     private func handleResponse(_ response: ShopResponse) {
@@ -149,13 +149,14 @@ extension ShopSearchViewController {
     }
     
     private func handleError(_ error: Error) {
-        print(error.localizedDescription)
-        
-        let alert = UIAlertController(title: nil, message: "데이터 로딩 실패", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "확인", style: .default))
-        alert.addAction(UIAlertAction(title: "재시도", style: .default, handler: { _ in self.call(self.selected) }))
-        
-        present(alert, animated: true)
+        UIAlertController(title: nil, message: error.localizedDescription, preferredStyle: .alert)
+            .then {
+                $0.addAction(UIAlertAction(title: "확인", style: .default))
+                $0.addAction(UIAlertAction(title: "재시도", style: .default, handler: { _ in self.call(self.selected) }))
+            }
+            .do {
+                present($0, animated: true)
+            }
     }
 }
 
@@ -191,7 +192,7 @@ extension ShopSearchViewController: UICollectionViewDelegate, UICollectionViewDa
     }
     
     internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.item == (searchItem.items.count - 2), searchItem.total > (searchItem.items.count + searchItem.display) {
+        if searchItem.hasNextPage(indexPath.item) {
             searchItem.page += 1
             call(selected)
         }
@@ -205,6 +206,7 @@ extension ShopSearchViewController: UICollectionViewDelegate, UICollectionViewDa
     private func reset() {
         searchItem = ShopSearchItem()
         updateResultLabel(searchItem.total)
+        collectionView.reloadData()
     }
 }
 

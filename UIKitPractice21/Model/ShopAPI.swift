@@ -8,7 +8,7 @@
 import Foundation
 import Alamofire
 
-enum ShopAPIErrorReason: LocalizedError {
+fileprivate enum ShopAPIErrorReason: LocalizedError {
     case urlIsInvalid
     case requestFailed
     case dataIsNil
@@ -33,42 +33,42 @@ enum ShopAPI {
 }
 
 extension ShopAPI: URLRequestConvertible {
-    var baseURL: URL {
+    private var baseURL: URL {
         guard let url = URL(string: "https://openapi.naver.com/v1") else {
             fatalError("URL is invalid")
         }
         return url
     }
     
-    var path: String {
+    private var path: String {
         switch self {
         case .search:
             return "/search/shop"
         }
     }
     
-    var method: HTTPMethod {
+    private var method: HTTPMethod {
         switch self {
         case .search:
             return .get
         }
     }
     
-    var headers: HTTPHeaders {
+    private var headers: HTTPHeaders {
         HTTPHeaders([
             "X-Naver-Client-Id": APIKey.naverClientId,
             "X-Naver-Client-Secret": APIKey.naverClientSecret
         ])
     }
     
-    var parameters: Parameters? {
+    private var parameters: Parameters? {
         switch self {
         case .search(let query, let display, let start, let sort):
             return ["query": query, "display": display, "start": start, "sort": sort]
         }
     }
     
-    func call(completionHandler: @escaping (Result<ShopResponse, Error>) -> Void) {
+    internal func call(completionHandler: @escaping (Result<ShopResponse, Error>) -> Void) {
         guard let request = try? self.asURLRequest() else {
             completionHandler(.failure(ShopAPIErrorReason.urlIsInvalid))
             return
@@ -99,7 +99,7 @@ extension ShopAPI: URLRequestConvertible {
             }
     }
     
-    func asURLRequest() throws -> URLRequest {
+    internal func asURLRequest() throws -> URLRequest {
         let url = try baseURL.asURL()
         var urlRequest: URLRequest = {
             switch self {
