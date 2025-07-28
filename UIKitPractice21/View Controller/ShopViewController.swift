@@ -9,9 +9,18 @@ import UIKit
 import Alamofire
 import SnapKit
 
-fileprivate enum ShopViewControllerErrorReason: Error {
+fileprivate enum ShopViewControllerErrorReason: LocalizedError {
     case textIsNil
     case textIsLowerThanTwo
+    case navigationControllerIsNil
+    
+    var errorDescription: String? {
+        switch self {
+        case .textIsNil: "검색 값이 비어있음"
+        case .textIsLowerThanTwo: "검색 값이 두 글자 이하"
+        case .navigationControllerIsNil: "네비게이션 컨트롤러가 존재하지 않음"
+        }
+    }
 }
 
 final class ShopViewController: BaseViewController {
@@ -70,10 +79,13 @@ extension ShopViewController: UISearchBarDelegate {
             let vc = ShopSearchViewController()
             vc.input(text: text)
             
-            self.navigationController?.pushViewController(vc, animated: true)
+            guard let navigationController else { throw ShopViewControllerErrorReason.navigationControllerIsNil }
+            navigationController.pushViewController(vc, animated: true)
         }
         catch(let error) {
-            print(error)
+            let alert = UIAlertController(title: nil, message: error.localizedDescription, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+            present(alert, animated: true)
         }
     }
     

@@ -19,7 +19,10 @@ final class ShopSearchViewController: BaseViewController {
     private let ascButton = SortByButton(sortBy: .asc, title: "가격높은순")
     private let dscButton = SortByButton(sortBy: .dsc, title: "가격낮은순")
     
-    private var item = ShopResponse(total: 0, items: [])
+    private var page = 1
+    private var total = 0
+    private let display = 100
+    private var items = [ShopItem]()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     
     override internal func viewDidLoad() {
@@ -103,6 +106,7 @@ extension ShopSearchViewController {
     
     @objc private func sortByButtonClicked(_ sender: SortByButton) {
         updateSortBy(sender)
+        reset()
         call()
     }
     
@@ -113,12 +117,13 @@ extension ShopSearchViewController {
     }
     
     private func call() {
-        let request = ShopRequest(query: searchText, display: 100, sort: String(describing: selected.sortBy))
+        let request = ShopRequest(query: searchText, display: display, start: page, sort: String(describing: selected.sortBy))
         ShopAPI(request: request).call {
             switch $0 {
             case .success(let data):
                 let response = try! JSONDecoder().decode(ShopResponse.self, from: data!)
-                self.updateCollectionView(item: response)
+                self.updateResultLabel(response.total)
+                self.updateCollectionView(items: response.items)
             case .failure(let error):
                 break
             }
@@ -144,20 +149,33 @@ extension ShopSearchViewController: UICollectionViewDelegate, UICollectionViewDa
     }
     
     internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        item.items.count
+        items.count
     }
     
     internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: ShopCell = collectionView.dequeueReusableCell(for: indexPath)
-        let item = item.items[indexPath.item]
+        let item = items[indexPath.item]
         cell.reload(item)
         
         return cell
     }
     
-    private func updateCollectionView(item: ShopResponse) {
-        self.item = item
+    internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.item == (items.count - 2), total > (items.count + display) {
+            page += 1
+            call()
+        }
+    }
+    
+    private func updateCollectionView(items: [ShopItem]) {
+        self.items.append(contentsOf: items)
         collectionView.reloadData()
+    }
+    
+    private func reset() {
+        updateResultLabel(0)
+        page = 1
+        items = []
     }
 }
 
