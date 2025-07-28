@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F8054A762E3758960029FDC6 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = F8054A752E3758960029FDC6 /* Then */; };
 		F856BF532E3353850082F818 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = F856BF522E3353850082F818 /* Alamofire */; };
 		F856BF562E3353900082F818 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = F856BF552E3353900082F818 /* SnapKit */; };
 		F856BF592E33539B0082F818 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = F856BF582E33539B0082F818 /* Kingfisher */; };
@@ -45,6 +46,7 @@
 				F856BF592E33539B0082F818 /* Kingfisher in Frameworks */,
 				F856BF532E3353850082F818 /* Alamofire in Frameworks */,
 				F856BF562E3353900082F818 /* SnapKit in Frameworks */,
+				F8054A762E3758960029FDC6 /* Then in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +92,7 @@
 				F856BF522E3353850082F818 /* Alamofire */,
 				F856BF552E3353900082F818 /* SnapKit */,
 				F856BF582E33539B0082F818 /* Kingfisher */,
+				F8054A752E3758960029FDC6 /* Then */,
 			);
 			productName = UIKitPractice21;
 			productReference = F856BEB92E334EB00082F818 /* UIKitPractice21.app */;
@@ -123,6 +126,7 @@
 				F856BF512E3353850082F818 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				F856BF542E3353900082F818 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				F856BF572E33539B0082F818 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				F8054A742E3758960029FDC6 /* XCRemoteSwiftPackageReference "Then" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F856BEBA2E334EB00082F818 /* Products */;
@@ -356,6 +360,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F8054A742E3758960029FDC6 /* XCRemoteSwiftPackageReference "Then" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/Then.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 		F856BF512E3353850082F818 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -383,6 +395,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		F8054A752E3758960029FDC6 /* Then */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8054A742E3758960029FDC6 /* XCRemoteSwiftPackageReference "Then" */;
+			productName = Then;
+		};
 		F856BF522E3353850082F818 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F856BF512E3353850082F818 /* XCRemoteSwiftPackageReference "Alamofire" */;

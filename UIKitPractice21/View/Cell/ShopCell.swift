@@ -52,20 +52,21 @@ extension ShopCell {
             $0.size.equalTo(imageView).multipliedBy(0.2)
         }
         
-        [brandLabel, titleLabel, priceLabel].snp.makeConstraints {
+        brandLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(16)
             $0.trailing.equalToSuperview().inset(12)
-        }
-        
-        brandLabel.snp.makeConstraints {
             $0.top.equalTo(imageView.snp.bottom).offset(4)
         }
         
         titleLabel.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(16)
+            $0.trailing.equalToSuperview().inset(12)
             $0.top.equalTo(brandLabel.snp.bottom).offset(4)
         }
         
         priceLabel.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(16)
+            $0.trailing.equalToSuperview().inset(12)
             $0.top.equalTo(titleLabel.snp.bottom).offset(4)
         }
     }
