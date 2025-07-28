@@ -103,10 +103,8 @@ extension ShopSearchViewController {
     }
     
     private func updateResultLabel(_ result: Int) {
-        resultLabel.do {
-            let attributedText = NSAttributedString(string: "\(result.formatted()) 개의 검색 결과", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: UIColor.systemGreen])
-            $0.attributedText = attributedText
-        }
+        let attributedText = NSAttributedString(string: "\(result.formatted()) 개의 검색 결과", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: UIColor.systemGreen])
+        resultLabel.attributedText = attributedText
     }
     
     @objc private func sortByButtonClicked(_ sender: SortByButton) {
