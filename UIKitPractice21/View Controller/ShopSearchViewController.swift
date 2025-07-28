@@ -9,6 +9,11 @@ import UIKit
 import SnapKit
 import Then
 
+enum ShopSearchViewControllerErrorReason: LocalizedError {
+    case selectButtonIsNil
+    case apiError(error: ShopAPIErrorReason)
+}
+
 final class ShopSearchViewController: BaseViewController {
     private var searchText = ""
     
@@ -112,36 +117,54 @@ extension ShopSearchViewController {
     }
     
     @objc private func sortByButtonClicked(_ sender: SortByButton) {
-        updateSortBy(sender)
+        selected = sender
         reset()
-        call()
+        call(sender)
     }
     
-    private func updateSortBy(_ button: SortByButton) {
-        selected = button
-    }
-    
-    private func call() {
-        guard let selected else { return }
-        let request = ShopRequest(query: searchText, display: searchItem.display, start: searchItem.page, sort: String(describing: selected.sortBy))
-        ShopAPI(request: request).call {
-            switch $0 {
-            case .success(let data):
-                let response = try! JSONDecoder().decode(ShopResponse.self, from: data!)
-                self.updateResultLabel(response.total)
-                self.updateCollectionView(items: response.items)
-            case .failure(let error):
-                break
+    private func call(_ button: SortByButton?) {
+        do {
+            guard let button else { throw ShopSearchViewControllerErrorReason.selectButtonIsNil }
+            let api = ShopAPI.search(query: searchText, display: searchItem.display, start: searchItem.page, sort: button.sortBy.rawValue)
+            
+            api.call {
+                switch $0 {
+                case .success(let response):
+                    self.handleResponse(response)
+                case .failure(let error):
+                    self.handleError(error)
+                }
             }
         }
+        catch(let error) {
+            handleError(error)
+        }
+        
+    }
+    
+    private func handleResponse(_ response: ShopResponse) {
+        searchItem.total = response.total
+        updateResultLabel(response.total)
+        updateCollectionView(items: response.items)
+    }
+    
+    private func handleError(_ error: Error) {
+        print(error.localizedDescription)
+        
+        let alert = UIAlertController(title: nil, message: "데이터 로딩 실패", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        alert.addAction(UIAlertAction(title: "재시도", style: .default, handler: { _ in self.call(self.selected) }))
+        
+        present(alert, animated: true)
     }
 }
 
 // MARK: CollectionView
 extension ShopSearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     private func configureCollectionView() {
-        let screen = UIScreen.main.bounds
         let layout = UICollectionViewFlowLayout().then {
+            let screen = UIScreen.main.bounds
+            
             $0.itemSize = CGSize(width: screen.width / 2, height: screen.width / 2 + screen.width / 6)
             $0.minimumInteritemSpacing = .zero
             $0.sectionInset = .zero
@@ -170,7 +193,7 @@ extension ShopSearchViewController: UICollectionViewDelegate, UICollectionViewDa
     internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if indexPath.item == (searchItem.items.count - 2), searchItem.total > (searchItem.items.count + searchItem.display) {
             searchItem.page += 1
-            call()
+            call(selected)
         }
     }
     

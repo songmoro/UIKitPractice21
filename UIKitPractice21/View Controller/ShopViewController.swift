@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 import SnapKit
 
 fileprivate enum ShopViewControllerErrorReason: LocalizedError {

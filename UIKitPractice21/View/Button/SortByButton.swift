@@ -6,7 +6,7 @@
 //
 
 class SortByButton: FilledButton {
-    var sortBy = SortBy.none
+    var sortBy = SortBy.sim
     
     init(sortBy: SortBy, title: String) {
         self.sortBy = sortBy
