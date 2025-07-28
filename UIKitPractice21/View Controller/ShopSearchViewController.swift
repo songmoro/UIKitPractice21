@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Then
 
 final class ShopSearchViewController: BaseViewController {
     private var searchText = ""
@@ -28,7 +29,7 @@ final class ShopSearchViewController: BaseViewController {
     private let ascButton = SortByButton(sortBy: .asc, title: "가격높은순")
     private let dscButton = SortByButton(sortBy: .dsc, title: "가격낮은순")
     
-    private var item = ShopSearchItem()
+    private var searchItem = ShopSearchItem()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     
     override internal func viewDidLoad() {
@@ -122,7 +123,7 @@ extension ShopSearchViewController {
     
     private func call() {
         guard let selected else { return }
-        let request = ShopRequest(query: searchText, display: item.display, start: item.page, sort: String(describing: selected.sortBy))
+        let request = ShopRequest(query: searchText, display: searchItem.display, start: searchItem.page, sort: String(describing: selected.sortBy))
         ShopAPI(request: request).call {
             switch $0 {
             case .success(let data):
@@ -139,47 +140,48 @@ extension ShopSearchViewController {
 // MARK: CollectionView
 extension ShopSearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     private func configureCollectionView() {
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.register(ShopCell.self)
-        
-        let layout = UICollectionViewFlowLayout()
         let screen = UIScreen.main.bounds
+        let layout = UICollectionViewFlowLayout().then {
+            $0.itemSize = CGSize(width: screen.width / 2, height: screen.width / 2 + screen.width / 6)
+            $0.minimumInteritemSpacing = .zero
+            $0.sectionInset = .zero
+        }
         
-        layout.itemSize = CGSize(width: screen.width / 2, height: screen.width / 2 + screen.width / 6)
-        layout.minimumInteritemSpacing = .zero
-        layout.sectionInset = .zero
-        
-        collectionView.collectionViewLayout = layout
+        collectionView.do {
+            $0.delegate = self
+            $0.dataSource = self
+            $0.register(ShopCell.self)
+            $0.collectionViewLayout = layout
+        }
     }
     
     internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        item.items.count
+        searchItem.items.count
     }
     
     internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: ShopCell = collectionView.dequeueReusableCell(for: indexPath)
-        let item = item.items[indexPath.item]
+        let item = searchItem.items[indexPath.item]
         cell.reload(item)
         
         return cell
     }
     
     internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.item == (item.items.count - 2), item.total > (item.items.count + item.display) {
-            item.page += 1
+        if indexPath.item == (searchItem.items.count - 2), searchItem.total > (searchItem.items.count + searchItem.display) {
+            searchItem.page += 1
             call()
         }
     }
     
     private func updateCollectionView(items: [ShopItem]) {
-        self.item.items.append(contentsOf: items)
+        self.searchItem.items.append(contentsOf: items)
         collectionView.reloadData()
     }
     
     private func reset() {
-        item = ShopSearchItem()
-        updateResultLabel(item.total)
+        searchItem = ShopSearchItem()
+        updateResultLabel(searchItem.total)
     }
 }
 

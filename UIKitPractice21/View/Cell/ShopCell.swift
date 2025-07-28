@@ -8,6 +8,7 @@
 import UIKit
 import Kingfisher
 import SnapKit
+import Then
 
 final class ShopCell: BaseCollectionViewCell {
     private var model: ShopItem? {
@@ -72,23 +73,32 @@ extension ShopCell {
     }
     
     private func configureDesign() {
-        imageView.kf.indicatorType = .activity
-        imageView.backgroundColor = .systemGray
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 24
+        imageView.do {
+            $0.kf.indicatorType = .activity
+            $0.backgroundColor = .systemGray
+            $0.clipsToBounds = true
+            $0.layer.cornerRadius = 24
+        }
         
-        heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
-        heartButton.setImage(UIImage(systemName: "heart.fill"), for: .selected)
-        heartButton.addTarget(self, action: #selector(heartButtonClicked), for: .touchUpInside)
-        heartButton.imageView!.tintColor = .systemBackground
-        heartButton.backgroundColor = .label
-        heartButton.layer.cornerRadius = heartButton.bounds.width / 2
-        heartButton.layer.masksToBounds = true
+        heartButton.do {
+            $0.setImage(UIImage(systemName: "heart"), for: .normal)
+            $0.setImage(UIImage(systemName: "heart.fill"), for: .selected)
+            $0.addTarget(self, action: #selector(heartButtonClicked), for: .touchUpInside)
+            $0.imageView!.tintColor = .systemBackground
+            $0.backgroundColor = .label
+            $0.layer.cornerRadius = $0.bounds.width / 2
+            $0.layer.masksToBounds = true
+        }
         
-        brandLabel.font = .systemFont(ofSize: 12)
-        brandLabel.textColor = .systemGray
-        titleLabel.font = .systemFont(ofSize: 13)
-        titleLabel.numberOfLines = 2
+        brandLabel.do {
+            $0.font = .systemFont(ofSize: 12)
+            $0.textColor = .systemGray
+        }
+        
+        titleLabel.do {
+            $0.font = .systemFont(ofSize: 13)
+            $0.numberOfLines = 2
+        }
     }
     
     @objc private func heartButtonClicked(_ sender: UIButton) {
