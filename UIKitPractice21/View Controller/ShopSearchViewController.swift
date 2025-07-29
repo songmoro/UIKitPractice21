@@ -122,21 +122,20 @@ extension ShopSearchViewController {
     }
     
     private func call(_ button: SortByButton?) {
-        do {
-            guard let button else { throw ShopSearchViewControllerErrorReason.selectButtonIsNil }
-            let api = ShopAPI.search(query: searchText, display: searchItem.display, start: searchItem.page, sort: button.sortBy.rawValue)
-            
-            api.call {
-                switch $0 {
-                case .success(let response):
-                    self.handleResponse(response)
-                case .failure(let error):
-                    self.handleError(error)
-                }
+        Task {
+            do {
+                guard let button else { throw ShopSearchViewControllerErrorReason.selectButtonIsNil }
+                let api = ShopAPI.search(query: searchText, display: searchItem.display, start: searchItem.page, sort: button.sortBy.rawValue)
+//                let api = ShopAPI.search(query: searchText, display: -1, start: searchItem.page, sort: button.sortBy.rawValue)
+//                let api = ShopAPI.search(query: searchText, display: searchItem.display, start: -1, sort: button.sortBy.rawValue)
+//                let api = ShopAPI.search(query: searchText, display: searchItem.display, start: searchItem.page, sort: "button.sortBy.rawValue")
+                
+                let response = try await NetworkManager.shared.call(by: api)
+                self.handleResponse(response)
             }
-        }
-        catch(let error) {
-            handleError(error)
+            catch(let error) {
+                handleError(error)
+            }
         }
     }
     
@@ -147,14 +146,9 @@ extension ShopSearchViewController {
     }
     
     private func handleError(_ error: Error) {
-        UIAlertController(title: nil, message: error.localizedDescription, preferredStyle: .alert)
-            .then {
-                $0.addAction(UIAlertAction(title: "확인", style: .default))
-                $0.addAction(UIAlertAction(title: "재시도", style: .default, handler: { _ in self.call(self.selected) }))
-            }
-            .do {
-                present($0, animated: true)
-            }
+        showAlert(message: error.localizedDescription) { [unowned self] in
+            call(selected)
+        }
     }
 }
 

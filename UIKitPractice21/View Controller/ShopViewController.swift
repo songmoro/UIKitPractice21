@@ -70,27 +70,26 @@ extension ShopViewController: UISearchBarDelegate {
     
     private func search(_ text: String?) {
         do {
-            try ShopSearchViewController()
-                .then {
-                    guard let text else { throw ShopViewControllerErrorReason.textIsNil }
-                    guard text.count >= 2 else { throw ShopViewControllerErrorReason.textIsLowerThanTwo }
-                    
-                    $0.input(text: text)
-                }
-                .do {
-                    guard let navigationController else { throw ShopViewControllerErrorReason.navigationControllerIsNil }
-                    navigationController.pushViewController($0, animated: true)
-                }
+            guard let text else { throw ShopViewControllerErrorReason.textIsNil }
+            guard text.count >= 2 else { throw ShopViewControllerErrorReason.textIsLowerThanTwo }
+            guard let navigationController else { throw ShopViewControllerErrorReason.navigationControllerIsNil }
+            
+            handleSearch(navigationController, text)
         }
         catch(let error) {
-            UIAlertController(title: nil, message: error.localizedDescription, preferredStyle: .alert)
-                .then {
-                    $0.addAction(UIAlertAction(title: "확인", style: .default))
-                }
-                .do {
-                    present($0, animated: true)
-                }
+            handleError(error: error)
         }
+    }
+    
+    private func handleSearch(_ navigationController: UINavigationController, _ text: String) {
+        ShopSearchViewController().do {
+            $0.input(text: text)
+            navigationController.pushViewController($0, animated: true)
+        }
+    }
+    
+    private func handleError(error: Error) {
+        showAlert(message: error.localizedDescription)
     }
     
     override internal func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
