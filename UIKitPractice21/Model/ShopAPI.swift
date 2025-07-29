@@ -12,6 +12,16 @@ enum ShopAPI {
     case search(query: String, display: Int, start: Int, sort: String = "sim")
 }
 
+extension ShopAPI: API {
+    var responseType: any Decodable.Type {
+        ShopResponse.self
+    }
+    
+    var errorResponseType: (any Decodable.Type)? {
+        ShopErrorResponse.self
+    }
+}
+
 extension ShopAPI: URLRequestConvertible {
     private var baseURL: URL {
         guard let url = URL(string: "https://openapi.naver.com/v1") else {

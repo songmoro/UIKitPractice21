@@ -11,6 +11,7 @@ import Then
 
 fileprivate enum ShopCollectionViewControllerErrorReason: LocalizedError {
     case selectButtonIsNil
+    case responseTypeIsInvalid
 }
 
 final class ShopCollectionViewController: BaseViewController {
@@ -130,7 +131,9 @@ extension ShopCollectionViewController {
 //                let api = ShopAPI.search(query: searchText, display: searchItem.display, start: -1, sort: button.sortBy.rawValue)
 //                let api = ShopAPI.search(query: searchText, display: searchItem.display, start: searchItem.page, sort: "button.sortBy.rawValue")
                 
-                let response = try await NetworkManager.shared.call(by: api)
+                
+                let response = try await NetworkManager.shared.caall(by: api)
+                guard let response = response as? ShopResponse else { throw ShopCollectionViewControllerErrorReason.responseTypeIsInvalid }
                 self.handleResponse(response)
             }
             catch(let error) {
