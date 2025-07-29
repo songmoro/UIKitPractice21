@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 
 enum ShopAPI {
-    case search(query: String, display: Int, start: Int, sort: String)
+    case search(query: String, display: Int, start: Int, sort: String = "sim")
 }
 
 extension ShopAPI: URLRequestConvertible {
