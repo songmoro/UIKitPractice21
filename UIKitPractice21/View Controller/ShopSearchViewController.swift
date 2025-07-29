@@ -146,7 +146,7 @@ extension ShopSearchViewController {
     }
     
     private func handleError(_ error: Error) {
-        showAlert(message: error.localizedDescription) { [unowned self] in
+        showAlert(message: error.localizedDescription, defaultTitle: "재시도") { [unowned self] in
             call(selected)
         }
     }
