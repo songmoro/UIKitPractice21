@@ -74,7 +74,7 @@ class NetworkManager {
         }
     }
     
-    func caall<T: API>(by api: T) async throws -> Decodable {
+    func call<T: API>(by api: T) async throws -> Decodable {
         guard let urlRequest = api.urlRequest else { throw APIErrorReason.urlIsInvalid }
         let dataResponse = await afRequest(urlRequest: urlRequest)
         guard let response = dataResponse.response else { throw APIErrorReason.responseIsNil }

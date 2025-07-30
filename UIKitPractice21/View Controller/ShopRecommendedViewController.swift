@@ -61,7 +61,7 @@ extension ShopRecommendedViewController {
             do {
                 let api = ShopAPI.search(query: searchText, display: searchItem.display, start: searchItem.page)
                 
-                let response = try await NetworkManager.shared.caall(by: api)
+                let response = try await NetworkManager.shared.call(by: api)
                 guard let response = response as? ShopResponse else { throw ShopRecommendedViewControllerErrorReason.responseTypeIsInvalid }
                 self.handleResponse(response)
             }
