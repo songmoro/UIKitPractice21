@@ -127,9 +127,6 @@ extension ShopCollectionViewController {
             do {
                 guard let button else { throw ShopCollectionViewControllerErrorReason.selectButtonIsNil }
                 let api = ShopAPI.search(query: searchText, display: searchItem.display, start: searchItem.page, sort: button.sortBy.rawValue)
-//                let api = ShopAPI.search(query: searchText, display: -1, start: searchItem.page, sort: button.sortBy.rawValue)
-//                let api = ShopAPI.search(query: searchText, display: searchItem.display, start: -1, sort: button.sortBy.rawValue)
-//                let api = ShopAPI.search(query: searchText, display: searchItem.display, start: searchItem.page, sort: "button.sortBy.rawValue")
                 
                 let response = try await NetworkManager.shared.caall(by: api)
                 guard let response = response as? ShopResponse else { throw ShopCollectionViewControllerErrorReason.responseTypeIsInvalid }
