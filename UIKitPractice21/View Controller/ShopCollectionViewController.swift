@@ -130,7 +130,10 @@ extension ShopCollectionViewController {
                 let response = try await NetworkManager.shared.call(by: api, of: ShopResponse.self, or: ShopErrorResponse.self)
                 self.handleResponse(response)
             }
-            catch(let error) {
+            catch let error as APIErrorReason {
+                handleError(error, isHandleable: false)
+            }
+            catch let error {
                 handleError(error)
             }
         }
@@ -142,9 +145,16 @@ extension ShopCollectionViewController {
         updateCollectionView(items: response.items)
     }
     
-    private func handleError(_ error: Error) {
-        showAlert(message: error.localizedDescription, defaultTitle: "재시도") { [unowned self] in
-            call(selected)
+    private func handleError(_ error: Error, isHandleable: Bool = true) {
+        if isHandleable {
+            showAlert(message: error.localizedDescription, defaultTitle: "재시도") { [unowned self] in
+                call(selected)
+            }
+        }
+        else {
+            showAcceptAlert(message: "다시 검색해주세요.") {
+                self.navigationController?.popViewController(animated: true)
+            }
         }
     }
 }

@@ -23,4 +23,11 @@ class BaseViewController: UIViewController {
         
         present(alertController, animated: true)
     }
+    
+    func showAcceptAlert(title: String? = nil, message: String? = nil, defaultTitle: String? = "확인", handler: (() -> Void)? = nil) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: defaultTitle, style: .default, handler: { _ in handler?() }))
+        
+        present(alertController, animated: true)
+    }
 }
