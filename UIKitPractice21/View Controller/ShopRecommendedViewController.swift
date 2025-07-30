@@ -9,10 +9,6 @@ import UIKit
 import SnapKit
 import Then
 
-fileprivate enum ShopRecommendedViewControllerErrorReason: LocalizedError {
-    case responseTypeIsInvalid
-}
-
 final class ShopRecommendedViewController: BaseViewController {
     private var searchText = ""
     private var searchItem = ShopSearchItem(display: 10)
@@ -61,8 +57,7 @@ extension ShopRecommendedViewController {
             do {
                 let api = ShopAPI.search(query: searchText, display: searchItem.display, start: searchItem.page)
                 
-                let response = try await NetworkManager.shared.call(by: api)
-                guard let response = response as? ShopResponse else { throw ShopRecommendedViewControllerErrorReason.responseTypeIsInvalid }
+                let response = try await NetworkManager.shared.call(by: api, of: ShopResponse.self, or: ShopErrorResponse.self)
                 self.handleResponse(response)
             }
             catch(let error) {

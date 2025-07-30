@@ -9,9 +9,8 @@ import UIKit
 import SnapKit
 import Then
 
-fileprivate enum ShopCollectionViewControllerErrorReason: LocalizedError {
+fileprivate enum ShopCollectionViewControllerErrorReason: Error {
     case selectButtonIsNil
-    case responseTypeIsInvalid
 }
 
 final class ShopCollectionViewController: BaseViewController {
@@ -128,8 +127,7 @@ extension ShopCollectionViewController {
                 guard let button else { throw ShopCollectionViewControllerErrorReason.selectButtonIsNil }
                 let api = ShopAPI.search(query: searchText, display: searchItem.display, start: searchItem.page, sort: button.sortBy.rawValue)
                 
-                let response = try await NetworkManager.shared.call(by: api)
-                guard let response = response as? ShopResponse else { throw ShopCollectionViewControllerErrorReason.responseTypeIsInvalid }
+                let response = try await NetworkManager.shared.call(by: api, of: ShopResponse.self, or: ShopErrorResponse.self)
                 self.handleResponse(response)
             }
             catch(let error) {

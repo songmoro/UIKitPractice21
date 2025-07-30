@@ -9,3 +9,11 @@ struct ShopResponse: Decodable {
     let total: Int
     let items: [ShopItem]
 }
+
+struct ShopItem: Decodable {
+    let title: String
+    let image: String
+    let brand: String
+    let lprice: String
+    let hprice: String
+}

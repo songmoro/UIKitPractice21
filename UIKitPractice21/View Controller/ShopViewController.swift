@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 import Then
 
-fileprivate enum ShopViewControllerErrorReason: LocalizedError {
+fileprivate enum ShopViewControllerErrorReason: Error {
     case textIsNil
     case textIsLowerThanTwo
     case navigationControllerIsNil
