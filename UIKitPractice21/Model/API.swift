@@ -8,10 +8,22 @@
 import Foundation
 import Alamofire
 
-enum APIErrorReason: Error {
-    case responseFailedWithError(errorResponse: Decodable)
-    case responseFailedWithStatusCode(statusCode: Int)
-    case responseFailedWithUnknownReason
+struct APIErrorReason: Error {
+    enum Kind {
+        case responseFailed
+        case responseFailedWithError
+        case responseFailedWithUnknownReason
+    }
+    
+    let kind: Kind
+    let statusCode: Int
+    let errorResponse: Decodable?
+    
+    init(kind: Kind, statusCode: Int, errorResponse: Decodable? = nil) {
+        self.kind = kind
+        self.statusCode = statusCode
+        self.errorResponse = errorResponse
+    }
 }
 
 protocol API: URLRequestConvertible {

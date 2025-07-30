@@ -23,7 +23,7 @@ class NetworkManager {
         }
         else {
             let errorResponse: E = try CustomJSONDecoder().decode(type: errorType.self, from: data)
-            throw APIErrorReason.responseFailedWithError(errorResponse: errorResponse)
+            throw APIErrorReason(kind: .responseFailedWithError, statusCode: response.statusCode, errorResponse: errorResponse)
         }
     }
     
@@ -37,7 +37,7 @@ class NetworkManager {
             return response
         }
         else {
-            throw APIErrorReason.responseFailedWithStatusCode(statusCode: response.statusCode)
+            throw APIErrorReason(kind: .responseFailed, statusCode: response.statusCode)
         }
     }
 }
