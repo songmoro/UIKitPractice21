@@ -37,12 +37,11 @@ final class ShopCollectionViewModel {
     }
     
     private var isInprogress = false
-    
-    let keyword: String
+    private let keyword: String
     @MyObservable var inputAction: InputAction
     @MyObservable private(set) var outputAction: OutputAction
     @MyObservable var searchItem: ShopSearchItem
-    @MyObservable var selected: SortBy
+    @MyObservable private var selected: SortBy
     
     init(keyword: String, inputAction: InputAction = .none, outputAction: OutputAction = .none, searchItem: ShopSearchItem = ShopSearchItem(), selected: SortBy = .sim) {
         self.keyword = keyword

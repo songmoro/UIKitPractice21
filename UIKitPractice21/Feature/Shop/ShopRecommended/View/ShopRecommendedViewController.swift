@@ -15,12 +15,17 @@ final class ShopRecommendedViewController: BaseViewController<ShopRecommendedVie
         $0.register(ShopRecommendedCell.self)
     }
     
+    override init(viewModel: ShopRecommendedViewModel) {
+        super.init(viewModel: viewModel)
+        bind()
+    }
+    
     override internal func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
         configure()
         
-        call()
+        viewModel.inputAction = .call
     }
     
     override func viewIsAppearing(_ animated: Bool) {
@@ -30,6 +35,20 @@ final class ShopRecommendedViewController: BaseViewController<ShopRecommendedVie
 }
 
 extension ShopRecommendedViewController {
+    private func bind() {
+        viewModel.$searchItem.bind { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.collectionView.reloadData()
+            }
+        }
+    }
+    
+    private func handleError(_ error: Error) {
+        showAlert(message: error.localizedDescription, defaultTitle: "재시도") { [unowned self] in
+//            viewModel.inputAction = .call
+        }
+    }
+    
     private func configure() {
         configureSubview()
         configureLayout()
@@ -42,33 +61,6 @@ extension ShopRecommendedViewController {
     private func configureLayout() {
         collectionView.snp.makeConstraints {
             $0.edges.equalToSuperview()
-        }
-    }
-}
-
-extension ShopRecommendedViewController {
-    private func call() {
-        Task {
-            do {
-                let api = ShopAPI.search(query: viewModel.keyword, display: viewModel.searchItem.display, start: viewModel.searchItem.page)
-                
-                let response = try await NetworkManager.shared.call(by: api, of: ShopResponse.self, or: ShopErrorResponse.self)
-                self.handleResponse(response)
-            }
-            catch(let error) {
-                print(error)
-            }
-        }
-    }
-    
-    private func handleResponse(_ response: ShopResponse) {
-        viewModel.searchItem.total = response.total
-        updateCollectionView(items: response.items)
-    }
-    
-    private func handleError(_ error: Error) {
-        showAlert(message: error.localizedDescription, defaultTitle: "재시도") { [unowned self] in
-            call()
         }
     }
 }
@@ -104,14 +96,6 @@ extension ShopRecommendedViewController: UICollectionViewDelegate, UICollectionV
     }
     
     internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if viewModel.searchItem.hasNextPage(indexPath.item) {
-            viewModel.searchItem.page += 1
-            call()
-        }
-    }
-    
-    private func updateCollectionView(items: [ShopItem]) {
-        viewModel.searchItem.items.append(contentsOf: items)
-        collectionView.reloadData()
+        viewModel.inputAction = .nextPage(itemIndex: indexPath.item)
     }
 }
