@@ -15,7 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         
         let tabBarController = UITabBarController()
-        let shopViewController = UINavigationController(rootViewController: ShopViewController())
+        let shopViewController = UINavigationController(rootViewController: ShopViewController(viewModel: ShopViewModel()))
         
         tabBarController.setViewControllers([shopViewController], animated: true)
         

@@ -9,28 +9,39 @@ import UIKit
 import SnapKit
 import Then
 
-final class ShopRecommendedViewController: BaseViewController {
-    private var searchText = ""
+final class ShopRecommendedViewModel {
+    let keyword: String
+    
+    init(keyword: String) {
+        self.keyword = keyword
+    }
+}
+
+final class ShopRecommendedViewController: BaseViewController<ShopRecommendedViewModel> {
+    
     private var searchItem = ShopSearchItem(display: 10)
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init()).then {
         $0.backgroundColor = .clear
         $0.register(ShopRecommendedCell.self)
     }
     
+    override init(viewModel: ShopRecommendedViewModel) {
+        super.init(viewModel: viewModel)
+//        self.searchText = searchText
+//        self.searchItem = searchItem
+    }
+    
     override internal func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
         configure()
+        
+        call()
     }
     
     override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
         configureCollectionView()
-    }
-    
-    public func input(text: String) {
-        searchText = text
-        call()
     }
 }
 
@@ -55,7 +66,7 @@ extension ShopRecommendedViewController {
     private func call() {
         Task {
             do {
-                let api = ShopAPI.search(query: searchText, display: searchItem.display, start: searchItem.page)
+                let api = ShopAPI.search(query: viewModel.keyword, display: searchItem.display, start: searchItem.page)
                 
                 let response = try await NetworkManager.shared.call(by: api, of: ShopResponse.self, or: ShopErrorResponse.self)
                 self.handleResponse(response)

@@ -13,11 +13,16 @@ fileprivate enum ShopCollectionViewControllerErrorReason: Error {
     case selectButtonIsNil
 }
 
-final class ShopCollectionViewController: BaseViewController {
-    private var searchText = ""
+final class ShopCollectionViewModel {
+    let keyword: String
     
+    init(keyword: String) {
+        self.keyword = keyword
+    }
+}
+
+final class ShopCollectionViewController: BaseViewController<ShopCollectionViewModel> {
     private let resultLabel = UILabel()
-    
     private var selected: SortByButton?
     // TODO: 커스텀 뷰
     private let simButton = SortByButton(sortBy: .sim, title: "정확도")
@@ -27,6 +32,12 @@ final class ShopCollectionViewController: BaseViewController {
     
     private var searchItem = ShopSearchItem()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
+    
+    override init(viewModel: ShopCollectionViewModel) {
+        super.init(viewModel: viewModel)
+        
+        updateNavigation(viewModel.keyword)
+    }
     
     override internal func viewDidLoad() {
         super.viewDidLoad()
@@ -93,11 +104,6 @@ private extension ShopCollectionViewController {
 
 // MARK: Update
 extension ShopCollectionViewController {
-    public func input(text: String) {
-        self.searchText = text
-        updateNavigation(text)
-    }
-    
     private func updateNavigation(_ title: String) {
         navigationItem.title = title
     }
@@ -125,7 +131,7 @@ extension ShopCollectionViewController {
         Task {
             do {
                 guard let button else { throw ShopCollectionViewControllerErrorReason.selectButtonIsNil }
-                let api = ShopAPI.search(query: searchText, display: searchItem.display, start: searchItem.page, sort: button.sortBy.rawValue)
+                let api = ShopAPI.search(query: viewModel.keyword, display: searchItem.display, start: searchItem.page, sort: button.sortBy.rawValue)
                 
                 let response = try await NetworkManager.shared.call(by: api, of: ShopResponse.self, or: ShopErrorResponse.self)
                 self.handleResponse(response)
@@ -209,9 +215,3 @@ extension ShopCollectionViewController: UICollectionViewDelegate, UICollectionVi
         collectionView.reloadData()
     }
 }
-
-#if DEBUG
-#Preview {
-    ShopCollectionViewController()
-}
-#endif

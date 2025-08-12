@@ -9,18 +9,23 @@ import UIKit
 import SnapKit
 import Then
 
-class ShopSearchViewController: BaseViewController {
-    var collectionViewController = ShopCollectionViewController()
-    var recommendedViewController = ShopRecommendedViewController()
+final class ShopSearchViewController: BaseViewController<ShopSearchViewModel> {
+    private let collectionViewController: ShopCollectionViewController
+    private let recommendedViewController: ShopRecommendedViewController
+    
+    override init(viewModel: ShopSearchViewModel) {
+        let shopCollectionVM = ShopCollectionViewModel(keyword: viewModel.keyword)
+        let shopRecommendedVM = ShopRecommendedViewModel(keyword: viewModel.keyword)
+        
+        self.collectionViewController = ShopCollectionViewController(viewModel: shopCollectionVM)
+        self.recommendedViewController = ShopRecommendedViewController(viewModel: shopRecommendedVM)
+        
+        super.init(viewModel: viewModel)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
-    }
-    
-    public func input(text: String) {
-        collectionViewController.input(text: text)
-        recommendedViewController.input(text: text)
     }
 }
 
