@@ -9,26 +9,10 @@ import UIKit
 import SnapKit
 import Then
 
-final class ShopRecommendedViewModel {
-    let keyword: String
-    
-    init(keyword: String) {
-        self.keyword = keyword
-    }
-}
-
 final class ShopRecommendedViewController: BaseViewController<ShopRecommendedViewModel> {
-    
-    private var searchItem = ShopSearchItem(display: 10)
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init()).then {
         $0.backgroundColor = .clear
         $0.register(ShopRecommendedCell.self)
-    }
-    
-    override init(viewModel: ShopRecommendedViewModel) {
-        super.init(viewModel: viewModel)
-//        self.searchText = searchText
-//        self.searchItem = searchItem
     }
     
     override internal func viewDidLoad() {
@@ -66,7 +50,7 @@ extension ShopRecommendedViewController {
     private func call() {
         Task {
             do {
-                let api = ShopAPI.search(query: viewModel.keyword, display: searchItem.display, start: searchItem.page)
+                let api = ShopAPI.search(query: viewModel.keyword, display: viewModel.searchItem.display, start: viewModel.searchItem.page)
                 
                 let response = try await NetworkManager.shared.call(by: api, of: ShopResponse.self, or: ShopErrorResponse.self)
                 self.handleResponse(response)
@@ -78,7 +62,7 @@ extension ShopRecommendedViewController {
     }
     
     private func handleResponse(_ response: ShopResponse) {
-        searchItem.total = response.total
+        viewModel.searchItem.total = response.total
         updateCollectionView(items: response.items)
     }
     
@@ -108,26 +92,26 @@ extension ShopRecommendedViewController: UICollectionViewDelegate, UICollectionV
     }
     
     internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        searchItem.items.count
+        viewModel.searchItem.items.count
     }
     
     internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(ShopRecommendedCell.self, for: indexPath)
-        let item = searchItem.items[indexPath.item]
+        let item = viewModel.searchItem.items[indexPath.item]
         cell.reload(item)
         
         return cell
     }
     
     internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if searchItem.hasNextPage(indexPath.item) {
-            searchItem.page += 1
+        if viewModel.searchItem.hasNextPage(indexPath.item) {
+            viewModel.searchItem.page += 1
             call()
         }
     }
     
     private func updateCollectionView(items: [ShopItem]) {
-        self.searchItem.items.append(contentsOf: items)
+        viewModel.searchItem.items.append(contentsOf: items)
         collectionView.reloadData()
     }
 }
