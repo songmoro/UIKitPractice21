@@ -13,38 +13,65 @@ fileprivate enum ShopCollectionViewControllerErrorReason: Error {
     case selectButtonIsNil
 }
 
-final class ShopCollectionViewModel {
-    let keyword: String
-    
-    init(keyword: String) {
-        self.keyword = keyword
-    }
-}
-
 final class ShopCollectionViewController: BaseViewController<ShopCollectionViewModel> {
     private let resultLabel = UILabel()
-    private var selected: SortByButton?
-    // TODO: 커스텀 뷰
+    
     private let simButton = SortByButton(sortBy: .sim, title: "정확도")
     private let dateButton = SortByButton(sortBy: .date, title: "날짜순")
     private let ascButton = SortByButton(sortBy: .asc, title: "가격높은순")
     private let dscButton = SortByButton(sortBy: .dsc, title: "가격낮은순")
     
-    private var searchItem = ShopSearchItem()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     
     override init(viewModel: ShopCollectionViewModel) {
         super.init(viewModel: viewModel)
+        bind()
     }
     
     override internal func viewDidLoad() {
         super.viewDidLoad()
         configure()
+        
+        sortByButtonClicked(simButton)
     }
 }
 
 // MARK: Configure
 private extension ShopCollectionViewController {
+    private func bind() {
+        viewModel.$outputAction.bind { [weak self] in
+            switch $0 {
+            case .updateButton(let sortBy):
+                DispatchQueue.main.async {
+                    [self?.simButton, self?.dateButton, self?.ascButton, self?.dscButton].compactMap(\.self)
+                        .forEach { button in
+                            button.isSelected = button.sortBy == sortBy
+                            button.isUserInteractionEnabled = button.sortBy != sortBy
+                        }
+                }
+                
+            case .updateLabel(let text):
+                DispatchQueue.main.async {
+                    self?.updateResultLabel(text)
+                }
+                
+            case .showAlert(let message, let isHandleable):
+                DispatchQueue.main.async {
+                    self?.handleError(message: message, isHandleable: isHandleable)
+                }
+                
+            default:
+                break
+            }
+        }
+        
+        viewModel.$searchItem.bind { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.collectionView.reloadData()
+            }
+        }
+    }
+    
     private func configure() {
         configureSubview()
         configureLayout()
@@ -95,60 +122,24 @@ private extension ShopCollectionViewController {
         [simButton, dateButton, ascButton, dscButton].forEach {
             $0.addTarget(self, action: #selector(sortByButtonClicked), for: .touchUpInside)
         }
-        
-        sortByButtonClicked(simButton)
     }
 }
 
 // MARK: Update
 extension ShopCollectionViewController {
-    private func updateResultLabel(_ result: Int) {
-        let attributedText = NSAttributedString(string: "\(result.formatted()) 개의 검색 결과", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: UIColor.systemGreen])
+    private func updateResultLabel(_ text: String) {
+        let attributedText = NSAttributedString(string: text, attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: UIColor.systemGreen])
         resultLabel.attributedText = attributedText
     }
     
     @objc private func sortByButtonClicked(_ sender: SortByButton) {
-        updateSelectedButton(sender)
-        reset()
-        call(sender)
+        viewModel.inputAction = .select(sender.sortBy)
     }
     
-    private func updateSelectedButton(_ willSelected: SortByButton) {
-        selected?.isSelected = false
-        selected?.isUserInteractionEnabled = true
-        selected = willSelected
-        willSelected.isSelected = true
-        willSelected.isUserInteractionEnabled = false
-    }
-    
-    private func call(_ button: SortByButton?) {
-        Task {
-            do {
-                guard let button else { throw ShopCollectionViewControllerErrorReason.selectButtonIsNil }
-                let api = ShopAPI.search(query: viewModel.keyword, display: searchItem.display, start: searchItem.page, sort: button.sortBy.rawValue)
-                
-                let response = try await NetworkManager.shared.call(by: api, of: ShopResponse.self, or: ShopErrorResponse.self)
-                self.handleResponse(response)
-            }
-            catch let error as APIErrorReason {
-                handleError(error, isHandleable: false)
-            }
-            catch let error {
-                handleError(error)
-            }
-        }
-    }
-    
-    private func handleResponse(_ response: ShopResponse) {
-        searchItem.total = response.total
-        updateResultLabel(response.total)
-        updateCollectionView(items: response.items)
-    }
-    
-    private func handleError(_ error: Error, isHandleable: Bool = true) {
+    private func handleError(message: String, isHandleable: Bool = true) {
         if isHandleable {
-            showAlert(message: error.localizedDescription, defaultTitle: "재시도") { [unowned self] in
-                call(selected)
+            showAlert(message: message, defaultTitle: "재시도") { [weak self] in
+                // retry
             }
         }
         else {
@@ -179,33 +170,18 @@ extension ShopCollectionViewController: UICollectionViewDelegate, UICollectionVi
     }
     
     internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        searchItem.items.count
+        viewModel.searchItem.items.count
     }
     
     internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: ShopCell = collectionView.dequeueReusableCell(for: indexPath)
-        let item = searchItem.items[indexPath.item]
+        let item = viewModel.searchItem.items[indexPath.item]
         cell.reload(item)
         
         return cell
     }
     
     internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if searchItem.hasNextPage(indexPath.item) {
-            searchItem.page += 1
-            call(selected)
-        }
-    }
-    
-    // MARK: Functions
-    private func updateCollectionView(items: [ShopItem]) {
-        self.searchItem.items.append(contentsOf: items)
-        collectionView.reloadData()
-    }
-    
-    private func reset() {
-        searchItem = ShopSearchItem()
-        updateResultLabel(searchItem.total)
-        collectionView.reloadData()
+        viewModel.inputAction = .nextPage(itemIndex: indexPath.item)
     }
 }
