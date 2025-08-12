@@ -35,8 +35,6 @@ final class ShopCollectionViewController: BaseViewController<ShopCollectionViewM
     
     override init(viewModel: ShopCollectionViewModel) {
         super.init(viewModel: viewModel)
-        
-        updateNavigation(viewModel.keyword)
     }
     
     override internal func viewDidLoad() {
@@ -104,10 +102,6 @@ private extension ShopCollectionViewController {
 
 // MARK: Update
 extension ShopCollectionViewController {
-    private func updateNavigation(_ title: String) {
-        navigationItem.title = title
-    }
-    
     private func updateResultLabel(_ result: Int) {
         let attributedText = NSAttributedString(string: "\(result.formatted()) 개의 검색 결과", attributes: [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: UIColor.systemGreen])
         resultLabel.attributedText = attributedText

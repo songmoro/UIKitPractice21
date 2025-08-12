@@ -34,6 +34,7 @@ extension ShopSearchViewController {
         configureSubview()
         configureChild()
         configureLayout()
+        configureView()
     }
     
     private func configureSubview() {
@@ -55,5 +56,9 @@ extension ShopSearchViewController {
             $0.height.equalTo(screen.height / 6)
             $0.bottom.horizontalEdges.equalToSuperview(\.safeAreaLayoutGuide)
         }
+    }
+    
+    private func configureView() {
+        navigationItem.title = viewModel.keyword
     }
 }

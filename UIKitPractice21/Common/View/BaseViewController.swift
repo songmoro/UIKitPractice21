@@ -20,6 +20,7 @@ class BaseViewController<ViewModel>: UIViewController {
     init(viewModel: ViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        navigationItem.backButtonTitle = ""
     }
     
     @available(*, unavailable)
