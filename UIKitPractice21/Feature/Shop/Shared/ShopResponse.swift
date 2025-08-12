@@ -31,11 +31,11 @@ struct ShopItem: Decodable {
     
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-//        ?<keyword> -> Capture
-        self.originalTitle = try container.decode(String.self, forKey: .title)
+        self.originalTitle = try container.decode(String.self, forKey: .title) //        ?<keyword> -> Capture
         self.title = originalTitle.replacing(/<b>|<\/b>/, with: "")
         self.image = try container.decode(String.self, forKey: .image)
-        self.brand = try container.decode(String.self, forKey: .brand)
+        let brand = try container.decode(String.self, forKey: .brand)
+        self.brand = brand.isEmpty ? "브랜드 없음" : brand
         self.lprice = try container.decode(String.self, forKey: .lprice)
         self.hprice = try container.decode(String.self, forKey: .hprice)
     }

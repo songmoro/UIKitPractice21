@@ -22,6 +22,7 @@ final class MyObservable<T> {
         }
     }
     
+//    private var handlers: [(T) -> Void]
     private var handler: ((T) -> Void)?
     private var value: T
     

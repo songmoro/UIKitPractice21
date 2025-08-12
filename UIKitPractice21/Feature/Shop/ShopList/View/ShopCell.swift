@@ -119,7 +119,7 @@ extension ShopCell {
             $0.kf.setImage(with: url, options: [.processor(processor)])
         }
         
-        brandLabel.text = model.brand.isEmpty ? "브랜드 없음" : model.brand
+        brandLabel.text = model.brand
         titleLabel.text = model.title
         
         priceLabel.do {
