@@ -64,7 +64,6 @@ final class ShopCollectionViewModel {
                 
             case .nextPage(let itemIndex):
                 if self?.hasNextPage(itemIndex) ?? false {
-                    print(#function, itemIndex)
                     self?.handleRequest(sortBy: self?.selected ?? .sim)
                 }
                 
@@ -92,15 +91,21 @@ final class ShopCollectionViewModel {
                     throw ShopCollectionViewModelErrorReason.invalid(response: result)
                 }
                 
-                outputAction = .updateLabel("\(response.total.formatted()) 개의 검색 결과")
-                searchItem.total = response.total
-                searchItem.items.append(contentsOf: response.items)
+                await MainActor.run {
+                    outputAction = .updateLabel("\(response.total.formatted()) 개의 검색 결과")
+                    searchItem.total = response.total
+                    searchItem.items.append(contentsOf: response.items)
+                }
             }
             catch let error as APIErrorReason {
-                outputAction = .showAlert(message: error.localizedDescription, isHandleable: false)
+                await MainActor.run {
+                    outputAction = .showAlert(message: error.localizedDescription, isHandleable: false)
+                }
             }
             catch let error {
-                outputAction = .showAlert(message: error.localizedDescription, isHandleable: true)
+                await MainActor.run {
+                    outputAction = .showAlert(message: error.localizedDescription, isHandleable: true)
+                }
             }
         }
     }

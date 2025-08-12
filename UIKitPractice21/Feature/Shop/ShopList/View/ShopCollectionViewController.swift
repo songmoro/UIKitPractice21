@@ -66,9 +66,7 @@ private extension ShopCollectionViewController {
         }
         
         viewModel.$searchItem.bind { [weak self] _ in
-            DispatchQueue.main.async {
-                self?.collectionView.reloadData()
-            }
+            self?.collectionView.reloadData()
         }
     }
     
