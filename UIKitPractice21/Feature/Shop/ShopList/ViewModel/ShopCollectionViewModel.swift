@@ -36,8 +36,9 @@ final class ShopCollectionViewModel {
         case showAlert(message: String, isHandleable: Bool)
     }
     
-    let keyword: String
+    private var isInprogress = false
     
+    let keyword: String
     @MyObservable var inputAction: InputAction
     @MyObservable private(set) var outputAction: OutputAction
     @MyObservable var searchItem: ShopSearchItem
@@ -76,6 +77,12 @@ final class ShopCollectionViewModel {
     
     private func handleRequest(sortBy: SortBy) {
         Task {
+            self.isInprogress = true
+            
+            defer {
+                self.isInprogress = false
+            }
+            
             do {
                 let result = try await call(sortBy)
                 
@@ -105,13 +112,11 @@ final class ShopCollectionViewModel {
     }
     
     private func hasNextPage(_ itemIndex: Int) -> Bool {
-        // TODO: 한 번에 한 요청씩만 처리해야함
-        // 현재는 여러 요청이 한 번에 들어와서 그로인해 여러 네트워크 요청이 이뤄짐
-        if searchItem.hasNextPage(itemIndex) {
-            searchItem.page += 1
-            return true
-        }
-        return false
+        guard !isInprogress else { return false }
+        guard searchItem.hasNextPage(itemIndex) else { return false }
+        
+        searchItem.page += 1
+        return true
     }
     
     private func retry() {
