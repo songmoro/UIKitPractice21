@@ -129,13 +129,3 @@ extension ShopCell {
         }
     }
 }
-
-#if DEBUG
-#Preview {
-    let item = ShopItem(title: "스타리아 2층캠핑카", image: "https://shopping-phinf.pstatic.net/main_8505202/85052026934.2.jpg", brand: "월드캠핑카", lprice: "", hprice: "19000000")
-    let cell = ShopCell()
-    cell.reload(item)
-    
-    return cell
-}
-#endif
